@@ -15,22 +15,20 @@ namespace EasySaveBusiness.ViewModels
         private readonly BackupJobService _backupService = backupService;
         private readonly LoggerService _loggerService = loggerService;
 
-        public Dictionary<int, BackupConfig> GetBackupJobs()
+        public Dictionary<int, BackupConfig> GetBackupConfigs()
         {
             return _backupConfigService.BackupConfigs;
         }
-        public void AddBackupJob(BackupConfig job)
+        public void AddBackupConfig(BackupConfig config)
         {
             var id = _backupConfigService.BackupConfigs.Count != 0 ? _backupConfigService.BackupConfigs.Keys.Max() + 1 : 0;
 
-            _loggerService.AddLog($"Adding backup job: {job.Name}");
-
-            _backupConfigService.AddBackupJob(id, job);
+            _backupConfigService.AddBackupConfig(id, config);
         }
 
-        public void RemoveBackupJob(int id)
+        public void RemoveBackupConfig(int id)
         {
-            _backupConfigService.RemoveBackupJob(id);
+            _backupConfigService.RemoveBackupConfig(id);
         }
     }
 }

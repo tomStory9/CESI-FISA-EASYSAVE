@@ -32,19 +32,19 @@ namespace EasySaveBusiness.Services
             }
         }
 
-        public void AddBackupJob(int id, BackupConfig job)
+        public void AddBackupConfig(int id, BackupConfig config)
         {
             if (BackupConfigs.ContainsKey(id))
             {
                 throw new Exception("Backup job already exists");
             }
 
-            BackupConfigs.Add(id, job);
+            BackupConfigs.Add(id, config);
 
             Save();
         }
 
-        public void RemoveBackupJob(int id)
+        public void RemoveBackupConfig(int id)
         {
             if (!BackupConfigs.Remove(id))
             {
