@@ -1,5 +1,4 @@
-﻿using EasySaveBusiness.Models;
-using EasySaveBusiness.Services;
+﻿using EasySaveBusiness.Services;
 using EasySaveBusiness.ViewModels;
 using EasySaveConsole.Services;
 using EasySaveConsole.Vues;
@@ -9,23 +8,30 @@ using System.Reflection;
 
 class Program
 {
-    static void Main(string[] args)
+    static async Task Main(string[] args)
     {
         SetCurrentCulture();
 
         var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
+        var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
 
         var loggerService = new LoggerService(logPath);
         var backupConfigService = new BackupConfigService();
+        var backupFullStateLogger = new BackupFullStateLogger(fullStatePath);
         var backupService = new BackupJobService(loggerService);
         var argParserService = new ArgParserService(args);
 
-        var viewModel = new EasySaveViewModel(backupConfigService, backupService, loggerService);
+        var viewModel = new EasySaveViewModel(
+            backupConfigService,
+            backupService,
+            loggerService,
+            backupFullStateLogger
+        );
         var view = new ConsoleView(argParserService);
         viewModel.View = view;
         view.ViewModel = viewModel;
 
-        viewModel.Init();
+        await viewModel.InitAsync();
     }
 
     static void SetCurrentCulture()

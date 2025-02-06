@@ -10,6 +10,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
     <PackageReference Include="Microsoft.Extensions.Localization" Version="9.0.1" />
+    <PackageReference Include="NeoSmart.PrettySize" Version="3.1.1" />
   </ItemGroup>
 
   <ItemGroup>
