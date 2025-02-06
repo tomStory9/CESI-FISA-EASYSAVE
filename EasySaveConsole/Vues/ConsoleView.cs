@@ -6,6 +6,7 @@ using EasySaveConsole.Services;
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using NeoSmart.PrettySize;
 
 namespace EasySaveConsole.Vues
 {
@@ -28,7 +29,8 @@ namespace EasySaveConsole.Vues
             catch
             {
                 ShowHelp();
-                throw new Exception("caca");
+                System.Environment.Exit(1);
+                return null;
             }
         }
 
@@ -61,12 +63,15 @@ namespace EasySaveConsole.Vues
             Console.WriteLine($"Chemin source: {backupJobFullState.SourceFilePath}");
             Console.WriteLine($"Chemin cible: {backupJobFullState.TargetFilePath}");
             Console.WriteLine($"État: {backupJobFullState.State}");
-            Console.WriteLine($"Total de fichiers à copier: {backupJobFullState.TotalFilesToCopy}");
+            Console.WriteLine($"Total de fichiers à copier: {new PrettySize(backupJobFullState.TotalFilesToCopy)}");
             Console.WriteLine($"Taille totale des fichiers: {backupJobFullState.TotalFilesSize}");
             Console.WriteLine($"Nombre de fichiers restants: {backupJobFullState.NbFilesLeftToDo}");
             Console.WriteLine($"Progression: {backupJobFullState.Progression}%");
 
             DrawProgressBar(backupJobFullState.Progression, 50);
+
+            Console.WriteLine();
+            Console.WriteLine();
         }
 
         private void DrawProgressBar(int progress, int totalWidth)

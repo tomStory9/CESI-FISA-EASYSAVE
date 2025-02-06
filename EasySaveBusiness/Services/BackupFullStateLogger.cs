@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace EasySaveBusiness.Services
 {
-    class BackupFullStateLogger
+    public class BackupFullStateLogger
     {
         private readonly string _logFilePath;
 
@@ -17,14 +17,14 @@ namespace EasySaveBusiness.Services
             _logFilePath = logFilePath;
         }
 
-        public void LogBackupFullState(BackupJobState state)
+        public void LogBackupFullState(List<BackupJobFullState> states)
         {
             var options = new JsonSerializerOptions
             {
                 WriteIndented = true
             };
 
-            var jsonString = JsonSerializer.Serialize(state, options);
+            var jsonString = JsonSerializer.Serialize(states, options);
             File.WriteAllText(_logFilePath, jsonString);
         }
     }
