@@ -1,85 +1,88 @@
 using EasySaveBusiness.Models;
+using EasySaveBusiness.Services;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using Xunit;
 
 namespace EasySaveBusiness.Tests
 {
-    public class BackupConfigTests
+    public class BackupConfigServiceTests
     {
-        [Fact]
-        public void BackupConfig_ShouldInitializePropertiesCorrectly()
+        private readonly BackupConfigService _service;
+        private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
+        private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
+
+        public BackupConfigServiceTests()
         {
-            // Arrange
-            string name = "Backup1";
-            string sourceDirectory = "C:/Source";
-            string targetDirectory = "D:/Target";
-            BackupType type = BackupType.Full;
+            // Nettoyer les fichiers de configuration avant chaque test
+            if (Directory.Exists(AppDataPath))
+            {
+                Directory.Delete(AppDataPath, true);
+            }
 
-            // Act
-            var backupConfig = new BackupConfig(name, sourceDirectory, targetDirectory, type);
-
-            // Assert
-            Assert.Equal(name, backupConfig.Name);
-            Assert.Equal(sourceDirectory, backupConfig.SourceDirectory);
-            Assert.Equal(targetDirectory, backupConfig.TargetDirectory);
-            Assert.Equal(type, backupConfig.Type);
+            _service = new BackupConfigService();
         }
 
         [Fact]
-        public void BackupConfig_ShouldHaveReadOnlyProperties()
+        public void AddBackupConfig_ShouldAddConfig_WhenConfigDoesNotExist()
         {
-            // Arrange
-            string name = "Backup1";
-            string sourceDirectory = "C:/Source";
-            string targetDirectory = "D:/Target";
-            BackupType type = BackupType.Full;
+ 
+            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
 
-            var backupConfig = new BackupConfig(name, sourceDirectory, targetDirectory, type);
 
-            // Act & Assert
-            // Vérifiez que les propriétés sont en lecture seule (pas de setter public)
-            Assert.True(backupConfig.GetType().GetProperty("Name")?.CanWrite == false);
-            Assert.True(backupConfig.GetType().GetProperty("SourceDirectory")?.CanWrite == false);
-            Assert.True(backupConfig.GetType().GetProperty("TargetDirectory")?.CanWrite == false);
-            Assert.True(backupConfig.GetType().GetProperty("Type")?.CanWrite == false);
+            _service.AddBackupConfig(1, config);
+
+
+            Assert.True(_service.BackupConfigs.ContainsKey(1));
+            Assert.Equal(config.Name, _service.BackupConfigs[1].Name);
         }
 
         [Fact]
-        public void BackupConfig_ShouldThrowArgumentNullException_WhenNameIsNull()
+        public void AddBackupConfig_ShouldThrowException_WhenConfigAlreadyExists()
         {
-            // Arrange
-            string name = null!;
-            string sourceDirectory = "C:/Source";
-            string targetDirectory = "D:/Target";
-            BackupType type = BackupType.Full;
 
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new BackupConfig(name, sourceDirectory, targetDirectory, type));
+            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
+            _service.AddBackupConfig(1, config);
+
+
+            var exception = Assert.Throws<InvalidOperationException>(() => _service.AddBackupConfig(1, config));
+            Assert.Equal($"Backup job with ID 1 already exists.", exception.Message);
         }
 
         [Fact]
-        public void BackupConfig_ShouldThrowArgumentNullException_WhenSourceDirectoryIsNull()
+        public void RemoveBackupConfig_ShouldRemoveConfig_WhenConfigExists()
         {
-            // Arrange
-            string name = "Backup1";
-            string sourceDirectory = null!;
-            string targetDirectory = "D:/Target";
-            BackupType type = BackupType.Full;
 
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new BackupConfig(name, sourceDirectory, targetDirectory, type));
+            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
+            _service.AddBackupConfig(1, config);
+
+
+            _service.RemoveBackupConfig(1);
+
+            Assert.False(_service.BackupConfigs.ContainsKey(1));
         }
 
         [Fact]
-        public void BackupConfig_ShouldThrowArgumentNullException_WhenTargetDirectoryIsNull()
+        public void RemoveBackupConfig_ShouldThrowException_WhenConfigDoesNotExist()
         {
-            // Arrange
-            string name = "Backup1";
-            string sourceDirectory = "C:/Source";
-            string targetDirectory = null!;
-            BackupType type = BackupType.Full;
+            var exception = Assert.Throws<KeyNotFoundException>(() => _service.RemoveBackupConfig(1));
+            Assert.Equal($"Backup job with ID 1 not found.", exception.Message);
+        }
 
-            // Act & Assert
-            Assert.Throws<ArgumentNullException>(() => new BackupConfig(name, sourceDirectory, targetDirectory, type));
+        [Fact]
+        public void Save_ShouldCreateConfigFile_WhenConfigIsAdded()
+        {
+
+            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
+            _service.AddBackupConfig(1, config);
+
+            Assert.True(File.Exists(ConfigPath));
+            var json = File.ReadAllText(ConfigPath);
+            var configs = JsonSerializer.Deserialize<Dictionary<int, BackupConfig>>(json);
+            Assert.True(configs.ContainsKey(1));
+            Assert.Equal(config.Name, configs[1].Name);
         }
     }
 }
