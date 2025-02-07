@@ -10,28 +10,37 @@ class Program
 {
     static async Task Main(string[] args)
     {
-        SetCurrentCulture();
+        try
+        {
+            SetCurrentCulture();
 
-        var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
-        var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
+            var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
+            var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
 
-        var loggerService = new LoggerService(logPath);
-        var backupConfigService = new BackupConfigService();
-        var backupFullStateLogger = new BackupFullStateLogger(fullStatePath);
-        var backupService = new BackupJobService(loggerService);
-        var argParserService = new ArgParserService(args);
+            var loggerService = new LoggerService(logPath);
+            var backupConfigService = new BackupConfigService();
+            var backupFullStateLogger = new BackupFullStateLogger(fullStatePath);
+            var backupService = new BackupJobService(loggerService);
+            var argParserService = new ArgParserService(args);
 
-        var viewModel = new EasySaveViewModel(
-            backupConfigService,
-            backupService,
-            loggerService,
-            backupFullStateLogger
-        );
-        var view = new ConsoleView(argParserService);
-        viewModel.View = view;
-        view.ViewModel = viewModel;
+            var viewModel = new EasySaveViewModel(
+                backupConfigService,
+                backupService,
+                loggerService,
+                backupFullStateLogger
+            );
+            var view = new ConsoleView(argParserService);
+            viewModel.View = view;
+            view.ViewModel = viewModel;
 
-        await viewModel.InitAsync();
+            await viewModel.InitAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Erreur critique: {ex.Message}");
+            Console.ResetColor();
+        }
     }
 
     static void SetCurrentCulture()

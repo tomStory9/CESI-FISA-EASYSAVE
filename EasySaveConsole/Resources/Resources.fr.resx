@@ -129,13 +129,49 @@
   <data name="FullBackup" xml:space="preserve">
     <value>Sauvegarde complète</value>
   </data>
+  <data name="HelpCreate" xml:space="preserve">
+    <value>Crée une nouvelle configuration de sauvegarde</value>
+  </data>
+  <data name="HelpExecuteRange" xml:space="preserve">
+    <value>Execute une suite de sauvegardes</value>
+  </data>
+  <data name="HelpExecuteSpecific" xml:space="preserve">
+    <value>Execute des sauvegardes spécifiques</value>
+  </data>
+  <data name="HelpHelp" xml:space="preserve">
+    <value>Affiche ce message d'aide</value>
+  </data>
+  <data name="HelpRemove" xml:space="preserve">
+    <value>Supprime une configuration de backup à partir de son ID</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>ID</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Nom</value>
+  </data>
+  <data name="NbFilesLeftToDo" xml:space="preserve">
+    <value>Nombre de fichiers restants</value>
+  </data>
+  <data name="Progression" xml:space="preserve">
+    <value>Progression</value>
   </data>
   <data name="SourceDirectory" xml:space="preserve">
     <value>Répertoire source</value>
   </data>
+  <data name="State" xml:space="preserve">
+    <value>État</value>
+  </data>
   <data name="TargetDirectory" xml:space="preserve">
     <value>Répertoire cible</value>
+  </data>
+  <data name="TotalFilesSize" xml:space="preserve">
+    <value>Taille totale des fichiers</value>
+  </data>
+  <data name="TotalFilesToCopy" xml:space="preserve">
+    <value>Total de fichiers à copier</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
   </data>
 </root>

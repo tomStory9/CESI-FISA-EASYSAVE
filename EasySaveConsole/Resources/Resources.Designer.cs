@@ -97,11 +97,83 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Create a new backup config.
+        /// </summary>
+        internal static string HelpCreate {
+            get {
+                return ResourceManager.GetString("HelpCreate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Execute a range of backup jobs.
+        /// </summary>
+        internal static string HelpExecuteRange {
+            get {
+                return ResourceManager.GetString("HelpExecuteRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Execute specific backup jobs.
+        /// </summary>
+        internal static string HelpExecuteSpecific {
+            get {
+                return ResourceManager.GetString("HelpExecuteSpecific", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Show this help message.
+        /// </summary>
+        internal static string HelpHelp {
+            get {
+                return ResourceManager.GetString("HelpHelp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Remove a backup config by ID.
+        /// </summary>
+        internal static string HelpRemove {
+            get {
+                return ResourceManager.GetString("HelpRemove", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à ID.
+        /// </summary>
+        internal static string Id {
+            get {
+                return ResourceManager.GetString("Id", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Name.
         /// </summary>
         internal static string Name {
             get {
                 return ResourceManager.GetString("Name", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Number of files left to do.
+        /// </summary>
+        internal static string NbFilesLeftToDo {
+            get {
+                return ResourceManager.GetString("NbFilesLeftToDo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Progression.
+        /// </summary>
+        internal static string Progression {
+            get {
+                return ResourceManager.GetString("Progression", resourceCulture);
             }
         }
         
@@ -115,11 +187,47 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à State.
+        /// </summary>
+        internal static string State {
+            get {
+                return ResourceManager.GetString("State", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Target directory.
         /// </summary>
         internal static string TargetDirectory {
             get {
                 return ResourceManager.GetString("TargetDirectory", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Total files size.
+        /// </summary>
+        internal static string TotalFilesSize {
+            get {
+                return ResourceManager.GetString("TotalFilesSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Total files to copy.
+        /// </summary>
+        internal static string TotalFilesToCopy {
+            get {
+                return ResourceManager.GetString("TotalFilesToCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Type.
+        /// </summary>
+        internal static string Type {
+            get {
+                return ResourceManager.GetString("Type", resourceCulture);
             }
         }
     }

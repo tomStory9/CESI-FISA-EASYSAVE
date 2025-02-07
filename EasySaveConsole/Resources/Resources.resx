@@ -129,13 +129,49 @@
   <data name="FullBackup" xml:space="preserve">
     <value>Full backup</value>
   </data>
+  <data name="HelpCreate" xml:space="preserve">
+    <value>Create a new backup config</value>
+  </data>
+  <data name="HelpExecuteRange" xml:space="preserve">
+    <value>Execute a range of backup jobs</value>
+  </data>
+  <data name="HelpExecuteSpecific" xml:space="preserve">
+    <value>Execute specific backup jobs</value>
+  </data>
+  <data name="HelpHelp" xml:space="preserve">
+    <value>Show this help message</value>
+  </data>
+  <data name="HelpRemove" xml:space="preserve">
+    <value>Remove a backup config by ID</value>
+  </data>
+  <data name="Id" xml:space="preserve">
+    <value>ID</value>
+  </data>
   <data name="Name" xml:space="preserve">
     <value>Name</value>
+  </data>
+  <data name="NbFilesLeftToDo" xml:space="preserve">
+    <value>Number of files left to do</value>
+  </data>
+  <data name="Progression" xml:space="preserve">
+    <value>Progression</value>
   </data>
   <data name="SourceDirectory" xml:space="preserve">
     <value>Source directory</value>
   </data>
+  <data name="State" xml:space="preserve">
+    <value>State</value>
+  </data>
   <data name="TargetDirectory" xml:space="preserve">
     <value>Target directory</value>
+  </data>
+  <data name="TotalFilesSize" xml:space="preserve">
+    <value>Total files size</value>
+  </data>
+  <data name="TotalFilesToCopy" xml:space="preserve">
+    <value>Total files to copy</value>
+  </data>
+  <data name="Type" xml:space="preserve">
+    <value>Type</value>
   </data>
 </root>
