@@ -37,36 +37,36 @@ namespace EasySaveConsole.Vues
         private void ShowHelp()
         {
             Console.WriteLine("Usage:");
-            Console.WriteLine("  ./easysave create <name> <sourceDirectory> <targetDirectory> <type> - Create a new backup job");
-            Console.WriteLine("  ./easysave remove <id> - Remove a backup job by ID");
-            Console.WriteLine("  ./easysave <id1;id2;id3> - Execute specific backup jobs");
-            Console.WriteLine("  ./easysave <id1-id3> - Execute a range of backup jobs");
-            Console.WriteLine("  ./easysave /help - Show this help message");
+            Console.WriteLine($"  ./easysave create <name> <sourceDirectory> <targetDirectory> <type> - {Resources.Resources.HelpCreate}");
+            Console.WriteLine($"  ./easysave remove <id> - {Resources.Resources.HelpRemove}");
+            Console.WriteLine($"  ./easysave <id1;id2;id3> - {Resources.Resources.HelpExecuteSpecific}");
+            Console.WriteLine($"  ./easysave <id1-id3> - {Resources.Resources.HelpExecuteRange}");
+            Console.WriteLine($"  ./easysave help - {Resources.Resources.HelpHelp}");
         }
 
         public void DisplayBackupConfigs(Dictionary<int, BackupConfig> backupConfigs)
         {
             foreach (var config in backupConfigs)
             {
-                Console.WriteLine($"ID: {config.Key}");
-                Console.WriteLine($"Nom: {config.Value.Name}");
-                Console.WriteLine($"Répertoire source: {config.Value.SourceDirectory}");
-                Console.WriteLine($"Répertoire cible: {config.Value.TargetDirectory}");
-                Console.WriteLine($"Type: {config.Value.Type}");
+                Console.WriteLine($"{Resources.Resources.Id}: {config.Key}");
+                Console.WriteLine($"{Resources.Resources.Name}: {config.Value.Name}");
+                Console.WriteLine($"{Resources.Resources.SourceDirectory}: {config.Value.SourceDirectory}");
+                Console.WriteLine($"{Resources.Resources.TargetDirectory}: {config.Value.TargetDirectory}");
+                Console.WriteLine($"{Resources.Resources.Type}: {config.Value.Type}");
                 Console.WriteLine();
             }
         }
 
         public void DisplayBackupJobFullState(BackupJobFullState backupJobFullState)
         {
-            Console.WriteLine($"Nom: {backupJobFullState.Name}");
-            Console.WriteLine($"Chemin source: {backupJobFullState.SourceFilePath}");
-            Console.WriteLine($"Chemin cible: {backupJobFullState.TargetFilePath}");
-            Console.WriteLine($"État: {backupJobFullState.State}");
-            Console.WriteLine($"Total de fichiers à copier: {new PrettySize(backupJobFullState.TotalFilesToCopy)}");
-            Console.WriteLine($"Taille totale des fichiers: {backupJobFullState.TotalFilesSize}");
-            Console.WriteLine($"Nombre de fichiers restants: {backupJobFullState.NbFilesLeftToDo}");
-            Console.WriteLine($"Progression: {backupJobFullState.Progression}%");
+            Console.WriteLine($"{Resources.Resources.Name}: {backupJobFullState.Name}");
+            Console.WriteLine($"{Resources.Resources.SourceDirectory}: {backupJobFullState.SourceFilePath}");
+            Console.WriteLine($"{Resources.Resources.TargetDirectory}: {backupJobFullState.TargetFilePath}");
+            Console.WriteLine($"{Resources.Resources.State}: {backupJobFullState.State}");
+            Console.WriteLine($"{Resources.Resources.TotalFilesToCopy}: {new PrettySize(backupJobFullState.TotalFilesToCopy)}");
+            Console.WriteLine($"{Resources.Resources.TotalFilesSize}: {backupJobFullState.TotalFilesSize}");
+            Console.WriteLine($"{Resources.Resources.NbFilesLeftToDo} : {backupJobFullState.NbFilesLeftToDo}");
+            Console.WriteLine($"{Resources.Resources.Progression} :  {backupJobFullState.Progression}");
 
             DrawProgressBar(backupJobFullState.Progression, 50);
 
