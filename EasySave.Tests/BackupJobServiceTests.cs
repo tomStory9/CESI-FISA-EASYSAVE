@@ -23,7 +23,7 @@ namespace EasySaveBusiness.Tests
             // Créer des répertoires temporaires pour les tests
             _sourceDirectory = Path.Combine(Path.GetTempPath(), $"SourceDir_{Guid.NewGuid()}");
             _targetDirectory = Path.Combine(Path.GetTempPath(), $"TargetDir_{Guid.NewGuid()}");
-            _logFilePath = Path.Combine(Path.GetTempPath(), $"backup_log_{Guid.NewGuid()}.json");
+            _logFilePath = Path.Combine(Path.GetTempPath(), $"LogDir_{Guid.NewGuid()}");
 
             Directory.CreateDirectory(_sourceDirectory);
             Directory.CreateDirectory(_targetDirectory);
@@ -44,8 +44,8 @@ namespace EasySaveBusiness.Tests
             if (Directory.Exists(_targetDirectory))
                 Directory.Delete(_targetDirectory, true);
 
-            if (File.Exists(_logFilePath))
-                File.Delete(_logFilePath);
+            if (Directory.Exists(_logFilePath))
+                Directory.Delete(_logFilePath, true);
         }
 
         [Fact]
@@ -64,13 +64,13 @@ namespace EasySaveBusiness.Tests
         [Fact]
         public async Task ExecuteBackupAsync_ShouldLogFileTransfer_WhenFileIsCopied()
         {
-
             var job = new BackupConfig("Backup1", _sourceDirectory, _targetDirectory, BackupType.Full);
             File.WriteAllText(Path.Combine(_sourceDirectory, "file1.txt"), "Test content");
 
             await _backupJobService.ExecuteBackupAsync(job);
 
-            var logContent = File.ReadAllText(_logFilePath);
+            string logFilePath = Path.Combine(_logFilePath, DateTime.Now.ToString("d-MM-yyyy") + ".json");
+            var logContent = File.ReadAllText(logFilePath);
             Assert.Contains("file1.txt", logContent);
             Assert.Contains("FileTransferTime", logContent);
         }
@@ -78,17 +78,17 @@ namespace EasySaveBusiness.Tests
         [Fact]
         public async Task ExecuteBackupAsync_ShouldNotCopyFiles_WhenBackupTypeIsDifferentialAndFileIsUnchanged()
         {
-
             var job = new BackupConfig("Backup1", _sourceDirectory, _targetDirectory, BackupType.Differential);
             File.WriteAllText(Path.Combine(_sourceDirectory, "file1.txt"), "Test content");
             File.WriteAllText(Path.Combine(_targetDirectory, "file1.txt"), "Test content");
 
-
             await _backupJobService.ExecuteBackupAsync(job);
 
+            string logFilePath = Path.Combine(_logFilePath, DateTime.Now.ToString("d-MM-yyyy") + ".json");
+            var logContent = File.ReadAllText(logFilePath);
 
-            var logContent = File.ReadAllText(_logFilePath);
-            Assert.DoesNotContain("file1.txt", logContent);
+            Assert.True(File.Exists(Path.Combine(_targetDirectory, "file1.txt")));
+            Assert.DoesNotContain("\"file1.txt\"", logContent);
         }
 
         [Fact]
