@@ -129,6 +129,15 @@
   <data name="FullBackup" xml:space="preserve">
     <value>Full backup</value>
   </data>
+  <data name="Name" xml:space="preserve">
+    <value>Name</value>
+  </data>
+  <data name="SourceDirectory" xml:space="preserve">
+    <value>Source directory</value>
+  </data>
+  <data name="TargetDirectory" xml:space="preserve">
+    <value>Target directory</value>
+  </data>
   <data name="HelpCreate" xml:space="preserve">
     <value>Create a new backup config</value>
   </data>
@@ -147,23 +156,14 @@
   <data name="Id" xml:space="preserve">
     <value>ID</value>
   </data>
-  <data name="Name" xml:space="preserve">
-    <value>Name</value>
-  </data>
   <data name="NbFilesLeftToDo" xml:space="preserve">
     <value>Number of files left to do</value>
   </data>
   <data name="Progression" xml:space="preserve">
     <value>Progression</value>
   </data>
-  <data name="SourceDirectory" xml:space="preserve">
-    <value>Source directory</value>
-  </data>
   <data name="State" xml:space="preserve">
     <value>State</value>
-  </data>
-  <data name="TargetDirectory" xml:space="preserve">
-    <value>Target directory</value>
   </data>
   <data name="TotalFilesSize" xml:space="preserve">
     <value>Total files size</value>
@@ -173,5 +173,26 @@
   </data>
   <data name="Type" xml:space="preserve">
     <value>Type</value>
+  </data>
+  <data name="InvalidBackupArguments  " xml:space="preserve">
+    <value>Incorrect number of arguments for creating a backup</value>
+  </data>
+  <data name="InvalidBackupType" xml:space="preserve">
+    <value>Type de sauvegarde invalide: {0}. Valeurs possibles : {1}</value>
+  </data>
+  <data name="InvalidRemoveArguments" xml:space="preserve">
+    <value>Invalid arguments for removing a backup</value>
+  </data>
+  <data name="NoValidBackupJobs" xml:space="preserve">
+    <value>No valid backup jobs found</value>
+  </data>
+  <data name="InvalidBackupRange" xml:space="preserve">
+    <value>Invalid backup range: {0}</value>
+  </data>
+  <data name="InvalidBackupId" xml:space="preserve">
+    <value>Invalid backup ID: {0}</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
   </data>
 </root>
