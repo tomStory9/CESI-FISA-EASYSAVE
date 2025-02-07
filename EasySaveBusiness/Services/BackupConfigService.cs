@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.Json;
 
 namespace EasySaveBusiness.Services
@@ -12,7 +11,7 @@ namespace EasySaveBusiness.Services
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
 
-        public Dictionary<int, BackupConfig> BackupConfigs { get; private set; } = [];
+        public Dictionary<int, BackupConfig> BackupConfigs { get; private set; } = new Dictionary<int, BackupConfig>();
 
         public BackupConfigService()
         {
@@ -21,26 +20,37 @@ namespace EasySaveBusiness.Services
 
         private void Init()
         {
-            if (File.Exists(ConfigPath))
+            try
             {
-                string json = File.ReadAllText(ConfigPath);
-                BackupConfigs = JsonSerializer.Deserialize<Dictionary<int, BackupConfig>>(json) ?? [];
+                if (File.Exists(ConfigPath))
+                {
+                    string json = File.ReadAllText(ConfigPath);
+                    BackupConfigs = JsonSerializer.Deserialize<Dictionary<int, BackupConfig>>(json) ?? new Dictionary<int, BackupConfig>();
+                }
+                else
+                {
+                    BackupConfigs = new Dictionary<int, BackupConfig>();
+                }
             }
-            else
+            catch (Exception ex)
             {
-                BackupConfigs = [];
+                throw new InvalidOperationException("Failed to initialize backup configurations.", ex);
             }
         }
 
         public void AddBackupConfig(int id, BackupConfig config)
         {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config), "Backup configuration cannot be null.");
+            }
+
             if (BackupConfigs.ContainsKey(id))
             {
-                throw new Exception("Backup job already exists");
+                throw new InvalidOperationException($"Backup job with ID {id} already exists.");
             }
 
             BackupConfigs.Add(id, config);
-
             Save();
         }
 
@@ -48,7 +58,7 @@ namespace EasySaveBusiness.Services
         {
             if (!BackupConfigs.Remove(id))
             {
-                throw new Exception("Backup job not found");
+                throw new KeyNotFoundException($"Backup job with ID {id} not found.");
             }
 
             Save();
@@ -56,17 +66,24 @@ namespace EasySaveBusiness.Services
 
         private void Save()
         {
-            if (!Directory.Exists(AppDataPath))
+            try
             {
-                Directory.CreateDirectory(AppDataPath);
+                if (!Directory.Exists(AppDataPath))
+                {
+                    Directory.CreateDirectory(AppDataPath);
+                }
+
+                string json = JsonSerializer.Serialize(BackupConfigs, new JsonSerializerOptions
+                {
+                    WriteIndented = true
+                });
+
+                File.WriteAllText(ConfigPath, json);
             }
-
-            string json = JsonSerializer.Serialize(BackupConfigs, new JsonSerializerOptions
+            catch (Exception ex)
             {
-                WriteIndented = true
-            });
-
-            File.WriteAllText(ConfigPath, json);
+                throw new InvalidOperationException("Failed to save backup configurations.", ex);
+            }
         }
     }
 }
