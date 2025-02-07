@@ -88,6 +88,15 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Error.
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Full backup.
         /// </summary>
         internal static string FullBackup {
@@ -151,6 +160,51 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Incorrect number of arguments for creating a backup.
+        /// </summary>
+        internal static string InvalidBackupArguments__ {
+            get {
+                return ResourceManager.GetString("InvalidBackupArguments  ", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid backup ID: {0}.
+        /// </summary>
+        internal static string InvalidBackupId {
+            get {
+                return ResourceManager.GetString("InvalidBackupId", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid backup range: {0}.
+        /// </summary>
+        internal static string InvalidBackupRange {
+            get {
+                return ResourceManager.GetString("InvalidBackupRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Type de sauvegarde invalide: {0}. Valeurs possibles : {1}.
+        /// </summary>
+        internal static string InvalidBackupType {
+            get {
+                return ResourceManager.GetString("InvalidBackupType", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid arguments for removing a backup.
+        /// </summary>
+        internal static string InvalidRemoveArguments {
+            get {
+                return ResourceManager.GetString("InvalidRemoveArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Name.
         /// </summary>
         internal static string Name {
@@ -165,6 +219,15 @@ namespace EasySaveConsole.Resources {
         internal static string NbFilesLeftToDo {
             get {
                 return ResourceManager.GetString("NbFilesLeftToDo", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à No valid backup jobs found.
+        /// </summary>
+        internal static string NoValidBackupJobs {
+            get {
+                return ResourceManager.GetString("NoValidBackupJobs", resourceCulture);
             }
         }
         
