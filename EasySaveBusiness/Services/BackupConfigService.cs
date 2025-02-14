@@ -10,9 +10,8 @@ namespace EasySaveBusiness.Services
     {
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
-
         public Dictionary<int, BackupConfig> BackupConfigs { get; private set; } = new Dictionary<int, BackupConfig>();
-
+        public static EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(new Dictionary<int, BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON);
         public BackupConfigService()
         {
             Init();
@@ -25,19 +24,20 @@ namespace EasySaveBusiness.Services
                 if (File.Exists(ConfigPath))
                 {
                     string json = File.ReadAllText(ConfigPath);
-                    BackupConfigs = JsonSerializer.Deserialize<Dictionary<int, BackupConfig>>(json) ?? new Dictionary<int, BackupConfig>();
+                    EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json)?? EasySaveConfig;
+                    BackupConfigs = EasySaveConfig.BackupConfigs;
                 }
                 else
                 {
+                    EasySaveConfig = new EasySaveConfig(new Dictionary<int, BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON);
                     BackupConfigs = new Dictionary<int, BackupConfig>();
                 }
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException("Failed to initialize backup configurations.", ex);
+                throw new InvalidOperationException("Failed to initialize easySave configurations.", ex);
             }
         }
-
         public void AddBackupConfig(int id, BackupConfig config)
         {   
             if(BackupConfigs.Count()==5)
@@ -76,8 +76,8 @@ namespace EasySaveBusiness.Services
                 {
                     Directory.CreateDirectory(AppDataPath);
                 }
-
-                string json = JsonSerializer.Serialize(BackupConfigs, new JsonSerializerOptions
+                EasySaveConfig = new EasySaveConfig(BackupConfigs, EasySaveConfig.WorkApp, EasySaveConfig.LogType);
+                string json = JsonSerializer.Serialize(EasySaveConfig, new JsonSerializerOptions
                 {
                     WriteIndented = true
                 });
