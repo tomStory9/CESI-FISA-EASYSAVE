@@ -29,7 +29,7 @@ namespace EasySaveBusiness.Tests
             Directory.CreateDirectory(_targetDirectory);
 
             // Initialiser LoggerService avec un fichier de log temporaire unique
-            _loggerService = new LoggerService(_logFilePath);
+            _loggerService = new LoggerService(_logFilePath , LoggerDLL.Models.LogType.LogTypeEnum.JSON);
 
             // Initialiser BackupJobService avec LoggerService
             _backupJobService = new BackupJobService(_loggerService);
