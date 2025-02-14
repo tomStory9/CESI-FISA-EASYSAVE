@@ -20,7 +20,7 @@ namespace EasySaveBusiness.Services
             LoggerService = loggerService;
         }
 
-        public async Task ExecuteBackupAsync(BackupConfig job)
+        public async Task ExecuteBackupAsync(BackupConfig job , EasySaveConfig config)
         {
             Console.WriteLine($"Executing backup: {job.Name}");
 
@@ -40,19 +40,31 @@ namespace EasySaveBusiness.Services
 
             int completedFiles = 0;
             long completedSize = 0;
-
-            foreach (var file in files)
+            Process[] WorkAppProcesses = Process.GetProcessesByName(config.WorkApp);
+            int i = 0;
+            while (i < files.Length && (job.Type ==BackupType.Full || (WorkAppProcesses.Length == 0 && job.Type == BackupType.Differential)))
             {
+                var file = files[i];
                 await ProcessFileAsync(job, file, completedFiles, completedSize, totalFiles, totalFilesSize);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
-            }
+                i++;
 
+            }
+            if (i < files.Length)
+            {
+                LoggerService.AddLog(new
+                {
+                    Type = "Error",
+                    Description = "Backup job stopped because work app have been launched"
+
+                });
+            }
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
                 job.Name,
                 "",
                 "",
-                BackupJobState.END,
+               i == files.Length -1 ? BackupJobState.END : BackupJobState.STOP,
                 totalFiles,
                 totalFilesSize,
                 0,
@@ -72,8 +84,8 @@ namespace EasySaveBusiness.Services
             {
                 Directory.CreateDirectory(destinationDir);
             }
-
             Stopwatch stopwatch = Stopwatch.StartNew();
+
             if (job.Type == BackupType.Full || !File.Exists(destinationFile) ||
                 File.GetLastWriteTime(file) > File.GetLastWriteTime(destinationFile))
             {
