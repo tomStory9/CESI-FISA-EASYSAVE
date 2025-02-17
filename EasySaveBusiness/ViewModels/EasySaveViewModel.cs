@@ -76,7 +76,8 @@ namespace EasySaveBusiness.ViewModels
             foreach (int id in ids)
             {
                 var backupConfig = _backupConfigService.BackupConfigs[id] ?? throw new Exception("Unknown backup id");
-                await _backupService.ExecuteBackupAsync(backupConfig);
+                var config = _backupConfigService.EasySaveConfig;
+                await _backupService.ExecuteBackupAsync(backupConfig,config);
             }
         }
         private void OnBackupJobFullStateChanged(object? sender, BackupJobFullState e)
