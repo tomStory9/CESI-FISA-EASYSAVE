@@ -1,10 +1,19 @@
-﻿namespace EasySaveBusiness.Models
+﻿using EasySaveBusiness.Models;
+
+public class BackupConfig
 {
-    public class BackupConfig(string name, string sourceDirectory, string targetDirectory, BackupType type)
+    public int Id { get; }
+    public string Name { get; }
+    public string SourceDirectory { get; }
+    public string TargetDirectory { get; }
+    public BackupType Type { get; }
+
+    public BackupConfig(int id, string name, string sourceDirectory, string targetDirectory, BackupType type)
     {
-        public string Name { get; } = name;
-        public string SourceDirectory { get; } = sourceDirectory;
-        public string TargetDirectory { get; } = targetDirectory;
-        public BackupType Type { get; } = type;
+        Id = id;
+        Name = name;
+        SourceDirectory = sourceDirectory;
+        TargetDirectory = targetDirectory;
+        Type = type;
     }
 }
