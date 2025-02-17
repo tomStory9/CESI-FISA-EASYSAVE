@@ -18,7 +18,27 @@ namespace EasySaveBusiness.Services
             BackupConfigService = backupConfigService;
 
             // map backup job full states
-            BackupJobFullStates = backupConfigService.BackupConfigs.Select((i, backupConfig) => new BackupJobFullState(backupConfig.Name);
+            BackupJobFullStates = backupConfigService.BackupConfigs.Select(backupConfig => new BackupJobFullState(
+                backupConfig.Id,
+                backupConfig.Name,
+                backupConfig.SourceDirectory,
+                backupConfig.TargetDirectory,
+                BackupJobState.END,
+                0,
+                0,
+                0,
+                0
+            )).ToList();
+
+            BackupFullStateLogger.LogBackupFullState(BackupJobFullStates);
+        }
+
+        public void OnBackupFullStateChanged(object? sender, BackupJobFullState e)
+        {
+            var index = BackupJobFullStates.FindIndex(state => state.Id == e.Id);
+            BackupJobFullStates[index] = e;
+
+            BackupFullStateLogger.LogBackupFullState(BackupJobFullStates);
         }
     }
 }

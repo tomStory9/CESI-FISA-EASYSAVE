@@ -14,22 +14,66 @@ namespace EasySaveBusiness.Services
     {
         public event EventHandler<BackupJobFullState>? BackupJobFullStateChanged;
         private LoggerService LoggerService { get; }
+        private BackupConfig BackupConfig { get; }
+        private EasySaveConfig EasySaveConfig { get; }
+        public BackupJobState State { get; private set; }
 
-        public BackupJobService(LoggerService loggerService)
+        private CancellationTokenSource? _cancellationTokenSource;
+        private Task? _backupTask;
+
+        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig)
         {
             LoggerService = loggerService;
+            BackupConfig = backupConfig;
+            EasySaveConfig = easySaveConfig;
+            State = BackupJobState.STOPPED;
         }
 
-        public async Task ExecuteBackupAsync(BackupConfig job, EasySaveConfig config)
+        public void Start()
         {
-            Console.WriteLine($"Executing backup: {job.Name}");
+            if (State == BackupJobState.ACTIVE)
+            {
+                throw new Exception("Backup job already running");
+            }
 
-            var files = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories);
+            _cancellationTokenSource = new CancellationTokenSource();
+            State = BackupJobState.ACTIVE;
+            _backupTask = Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token), _cancellationTokenSource.Token);
+        }
+
+        public void Pause()
+        {
+            if (State != BackupJobState.ACTIVE)
+            {
+                throw new Exception("Backup job is not running");
+            }
+
+            State = BackupJobState.PAUSED;
+            _cancellationTokenSource?.Cancel();
+        }
+
+        public void Stop()
+        {
+            if (State == BackupJobState.STOPPED)
+            {
+                throw new Exception("Backup job is not running");
+            }
+
+            State = BackupJobState.STOPPED;
+            _cancellationTokenSource?.Cancel();
+        }
+
+        private async Task ExecuteBackupAsync(CancellationToken cancellationToken)
+        {
+            Console.WriteLine($"Executing backup: {BackupConfig.Name}");
+
+            var files = Directory.GetFiles(BackupConfig.SourceDirectory, "*", SearchOption.AllDirectories);
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
 
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                job.Name,
+                BackupConfig.Id,
+                BackupConfig.Name,
                 "",
                 "",
                 BackupJobState.ACTIVE,
@@ -45,9 +89,25 @@ namespace EasySaveBusiness.Services
 
             while (i < files.Length)
             {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
+                        BackupConfig.Id,
+                        BackupConfig.Name,
+                        "",
+                        "",
+                        State,
+                        totalFiles,
+                        totalFilesSize,
+                        totalFiles - completedFiles,
+                        (int)((completedSize * 100) / totalFilesSize)
+                    ));
+                    return;
+                }
+
                 var file = files[i];
 
-                if (job.Type == BackupType.Differential && Process.GetProcessesByName(config.WorkApp).Length > 0)
+                if (BackupConfig.Type == BackupType.Differential && Process.GetProcessesByName(EasySaveConfig.WorkApp).Length > 0)
                 {
                     LoggerService.AddLog(new
                     {
@@ -56,10 +116,11 @@ namespace EasySaveBusiness.Services
                     });
 
                     BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                        job.Name,
+                        BackupConfig.Id,
+                        BackupConfig.Name,
                         "",
                         "",
-                        BackupJobState.STOP,
+                        BackupJobState.STOPPED,
                         totalFiles,
                         totalFilesSize,
                         totalFiles - completedFiles,
@@ -69,30 +130,31 @@ namespace EasySaveBusiness.Services
                     return;
                 }
 
-                await ProcessFileAsync(job, file, completedFiles, completedSize, totalFiles, totalFilesSize);
+                await ProcessFileAsync(file, completedFiles, completedSize, totalFiles, totalFilesSize);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
             }
 
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                job.Name,
+                BackupConfig.Id,
+                BackupConfig.Name,
                 "",
                 "",
-                BackupJobState.END,
+                BackupJobState.STOPPED,
                 totalFiles,
                 totalFilesSize,
                 0,
                 100
             ));
 
-            Console.WriteLine($"Backup {job.Name} completed.");
+            Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
 
-        private async Task ProcessFileAsync(BackupConfig job, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
+        private async Task ProcessFileAsync(string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
         {
-            string relativePath = Path.GetRelativePath(job.SourceDirectory, file);
-            string destinationFile = Path.Combine(job.TargetDirectory, relativePath);
+            string relativePath = Path.GetRelativePath(BackupConfig.SourceDirectory, file);
+            string destinationFile = Path.Combine(BackupConfig.TargetDirectory, relativePath);
             string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
 
             if (!Directory.Exists(destinationDir))
@@ -101,7 +163,7 @@ namespace EasySaveBusiness.Services
             }
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            if (job.Type == BackupType.Full || !File.Exists(destinationFile) ||
+            if (BackupConfig.Type == BackupType.Full || !File.Exists(destinationFile) ||
                 File.GetLastWriteTime(file) > File.GetLastWriteTime(destinationFile))
             {
                 await Task.Run(() => File.Copy(file, destinationFile, true));
@@ -110,7 +172,8 @@ namespace EasySaveBusiness.Services
             double transferTime = stopwatch.Elapsed.TotalMilliseconds;
 
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                job.Name,
+                BackupConfig.Id,
+                BackupConfig.Name,
                 file,
                 destinationFile,
                 BackupJobState.ACTIVE,
@@ -122,7 +185,7 @@ namespace EasySaveBusiness.Services
 
             LoggerService.AddLog(new
             {
-                Name = job.Name,
+                Name = BackupConfig.Name,
                 FileSource = file,
                 FileTarget = destinationFile,
                 FileTransferTime = transferTime,

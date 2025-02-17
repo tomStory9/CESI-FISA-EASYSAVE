@@ -15,13 +15,15 @@ namespace EasySaveBusiness.ViewModels
         BackupConfigService backupConfigService,
         BackupJobService backupService,
         LoggerService loggerService,
-        BackupFullStateLogger backupFullStateLogger
+        BackupFullStateLogger backupFullStateLogger,
+        BackupStateManagerService backupStateManagerService
        )
     {
         private readonly BackupConfigService _backupConfigService = backupConfigService;
         private readonly BackupJobService _backupService = backupService;
         private readonly LoggerService _loggerService = loggerService;
         private readonly BackupFullStateLogger _backupFullStateLogger = backupFullStateLogger;
+        private readonly BackupStateManagerService _backupStateManagerService = backupStateManagerService;
         public IView View { private get; set; }
 
         public async Task InitAsync()
@@ -29,6 +31,7 @@ namespace EasySaveBusiness.ViewModels
             View!.Init();
 
             _backupService.BackupJobFullStateChanged += OnBackupJobFullStateChanged;
+            _backupService.BackupJobFullStateChanged += _backupStateManagerService.OnBackupFullStateChanged;
 
             var userChoice = View.GetUserChoice();
 
@@ -55,7 +58,7 @@ namespace EasySaveBusiness.ViewModels
             }
         }
 
-        public Dictionary<int, BackupConfig> GetBackupConfigs()
+        public List<BackupConfig> GetBackupConfigs()
         {
             return _backupConfigService.BackupConfigs;
         }
@@ -82,8 +85,6 @@ namespace EasySaveBusiness.ViewModels
         }
         private void OnBackupJobFullStateChanged(object? sender, BackupJobFullState e)
         {
-            _backupFullStateLogger.LogBackupFullState(new List<BackupJobFullState> { e });
-
             View.DisplayBackupJobFullState(e);
         }
     }

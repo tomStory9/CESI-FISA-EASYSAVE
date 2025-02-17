@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 namespace EasySaveBusiness.Models
 {
     public class BackupJobFullState(
+        int id,
         string name,
         string sourceFilePath,
         string targetFilePath,
@@ -16,6 +17,7 @@ namespace EasySaveBusiness.Models
         long nbFilesLeftToDo,
         int progression
     ) {
+        public int Id { get; } = id;
         public string Name { get; } = name;
         public string SourceFilePath { get; } = sourceFilePath;
         public string TargetFilePath { get; } = targetFilePath;

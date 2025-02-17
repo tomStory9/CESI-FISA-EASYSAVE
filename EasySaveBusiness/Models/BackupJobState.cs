@@ -9,7 +9,7 @@ namespace EasySaveBusiness.Models
     public enum BackupJobState
     {
         ACTIVE,
-        END,
-        STOP
+        PAUSED,
+        STOPPED
     }
 }
