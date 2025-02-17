@@ -20,13 +20,14 @@ namespace EasySaveBusiness.Services
             LoggerService = loggerService;
         }
 
-        public async Task ExecuteBackupAsync(BackupConfig job , EasySaveConfig config)
+        public async Task ExecuteBackupAsync(BackupConfig job, EasySaveConfig config)
         {
             Console.WriteLine($"Executing backup: {job.Name}");
 
             var files = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories);
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
+
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
                 job.Name,
                 "",
@@ -40,31 +41,45 @@ namespace EasySaveBusiness.Services
 
             int completedFiles = 0;
             long completedSize = 0;
-            Process[] WorkAppProcesses = Process.GetProcessesByName(config.WorkApp);
             int i = 0;
-            while (i < files.Length && (job.Type ==BackupType.Full || (WorkAppProcesses.Length == 0 && job.Type == BackupType.Differential)))
+
+            while (i < files.Length)
             {
                 var file = files[i];
+
+                if (job.Type == BackupType.Differential && Process.GetProcessesByName(config.WorkApp).Length > 0)
+                {
+                    LoggerService.AddLog(new
+                    {
+                        Type = "Error",
+                        Description = "Backup job stopped because work app has been launched"
+                    });
+
+                    BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
+                        job.Name,
+                        "",
+                        "",
+                        BackupJobState.STOP,
+                        totalFiles,
+                        totalFilesSize,
+                        totalFiles - completedFiles,
+                        (int)((completedSize * 100) / totalFilesSize)
+                    ));
+
+                    return;
+                }
+
                 await ProcessFileAsync(job, file, completedFiles, completedSize, totalFiles, totalFilesSize);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
-
             }
-            if (i < files.Length)
-            {
-                LoggerService.AddLog(new
-                {
-                    Type = "Error",
-                    Description = "Backup job stopped because work app have been launched"
 
-                });
-            }
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
                 job.Name,
                 "",
                 "",
-               i == files.Length -1 ? BackupJobState.END : BackupJobState.STOP,
+                BackupJobState.END,
                 totalFiles,
                 totalFilesSize,
                 0,
