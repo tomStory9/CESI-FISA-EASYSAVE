@@ -23,7 +23,7 @@ namespace EasySaveBusiness.Services
                 backupConfig.Name,
                 backupConfig.SourceDirectory,
                 backupConfig.TargetDirectory,
-                BackupJobState.END,
+                BackupJobState.STOPPED,
                 0,
                 0,
                 0,
