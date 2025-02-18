@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using EasySaveBusiness.Services;
 
 namespace EasySaveBusiness.Services
 {
@@ -16,7 +17,9 @@ namespace EasySaveBusiness.Services
         private LoggerService LoggerService { get; }
         private BackupConfig BackupConfig { get; }
         private EasySaveConfig EasySaveConfig { get; }
+        private FileProcessingService FileProcessingService { get; }
         private BackupJobFullState _FullState;
+
         public BackupJobFullState FullState
         {
             get { return _FullState; }
@@ -37,7 +40,7 @@ namespace EasySaveBusiness.Services
             EasySaveConfig = easySaveConfig;
             FullState = BackupJobFullState.Default(backupConfig.Id, backupConfig.Name, backupConfig.SourceDirectory, backupConfig.TargetDirectory);
             FileProcessingService = fileProcessingService;
-            State = BackupJobState.STOPPED;
+            
         }
 
         public void Start()
@@ -98,7 +101,7 @@ namespace EasySaveBusiness.Services
 
                 var file = files[i];
 
-                if (BackupConfig.Type == BackupType.Differential && IsRunningWorkApp.IsRunning(EasySaveConfig.)
+                if (BackupConfig.Type == BackupType.Differential && IsRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp))
                 {
                     LoggerService.AddLog(new
                     {
@@ -120,5 +123,20 @@ namespace EasySaveBusiness.Services
 
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
+        private void UpdateFullState(BackupJobState state, long totalFiles = 0, long totalFilesSize = 0, long nbFilesLeftToDo = 0, int progression = 0, string sourceFilePath = "", string targetFilePath = "")
+        {
+            FullState = new BackupJobFullState(
+                BackupConfig.Id,
+                BackupConfig.Name,
+                sourceFilePath,
+                targetFilePath,
+                state,
+                totalFiles,
+                totalFilesSize,
+                nbFilesLeftToDo,
+                progression
+            );
+        }
     }
 }
+

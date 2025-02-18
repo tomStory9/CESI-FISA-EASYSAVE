@@ -10,6 +10,7 @@ namespace EasySaveBusiness.Services
     public class FileProcessingService
     {
         private readonly LoggerService _loggerService;
+        private readonly DifferentialBackupVerifierService DifferentialBackupVerifierService = new DifferentialBackupVerifierService();
 
         public FileProcessingService(LoggerService loggerService)
         {
@@ -28,8 +29,7 @@ namespace EasySaveBusiness.Services
             }
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            if (backupConfig.Type == BackupType.Full || !File.Exists(destinationFile) ||
-                File.GetLastWriteTime(file) > File.GetLastWriteTime(destinationFile))
+            if (DifferentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
             {
                 await Task.Run(() => File.Copy(file, destinationFile, true));
             }
