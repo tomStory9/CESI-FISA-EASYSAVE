@@ -27,5 +27,24 @@ namespace EasySaveBusiness.Models
         public long NbFilesLeftToDo { get; } = nbFilesLeftToDo;
         public int Progression { get; } = progression;
 
+        public static BackupJobFullState Default(
+            int id,
+            string name,
+            string sourceFilePath,
+            string targetFilePath
+        )
+        {
+            return new BackupJobFullState(
+                id,
+                name,
+                sourceFilePath,
+                targetFilePath,
+                BackupJobState.STOPPED,
+                0,
+                0,
+                0,
+                0
+            );
+        }
     }
 }
