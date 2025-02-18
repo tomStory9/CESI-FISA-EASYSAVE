@@ -9,7 +9,7 @@ namespace EasySaveBusiness.Services
 {
     class IsRunningWorkApp
     {
-        public bool IsRunning(string processName)
+        static bool IsRunning(string processName)
         {
             return Process.GetProcessesByName(processName).Length > 0;
         }

@@ -16,16 +16,18 @@ namespace EasySaveBusiness.Services
         private LoggerService LoggerService { get; }
         private BackupConfig BackupConfig { get; }
         private EasySaveConfig EasySaveConfig { get; }
+        private FileProcessingService FileProcessingService { get; }
         public BackupJobState State { get; private set; }
 
         private CancellationTokenSource? _cancellationTokenSource;
         private Task? _backupTask;
 
-        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig)
+        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig, FileProcessingService fileProcessingService)
         {
             LoggerService = loggerService;
             BackupConfig = backupConfig;
             EasySaveConfig = easySaveConfig;
+            FileProcessingService = fileProcessingService;
             State = BackupJobState.STOPPED;
         }
 
@@ -107,7 +109,7 @@ namespace EasySaveBusiness.Services
 
                 var file = files[i];
 
-                if (BackupConfig.Type == BackupType.Differential && Process.GetProcessesByName(EasySaveConfig.WorkApp).Length > 0)
+                if (BackupConfig.Type == BackupType.Differential && IsRunningWorkApp.IsRunning(EasySaveConfig.)
                 {
                     LoggerService.AddLog(new
                     {
@@ -130,7 +132,7 @@ namespace EasySaveBusiness.Services
                     return;
                 }
 
-                await ProcessFileAsync(file, completedFiles, completedSize, totalFiles, totalFilesSize);
+                await FileProcessingService.ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, BackupJobFullStateChanged);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
@@ -149,48 +151,6 @@ namespace EasySaveBusiness.Services
             ));
 
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
-        }
-
-        private async Task ProcessFileAsync(string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
-        {
-            string relativePath = Path.GetRelativePath(BackupConfig.SourceDirectory, file);
-            string destinationFile = Path.Combine(BackupConfig.TargetDirectory, relativePath);
-            string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
-
-            if (!Directory.Exists(destinationDir))
-            {
-                Directory.CreateDirectory(destinationDir);
-            }
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            if (BackupConfig.Type == BackupType.Full || !File.Exists(destinationFile) ||
-                File.GetLastWriteTime(file) > File.GetLastWriteTime(destinationFile))
-            {
-                await Task.Run(() => File.Copy(file, destinationFile, true));
-            }
-            stopwatch.Stop();
-            double transferTime = stopwatch.Elapsed.TotalMilliseconds;
-
-            BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                BackupConfig.Id,
-                BackupConfig.Name,
-                file,
-                destinationFile,
-                BackupJobState.ACTIVE,
-                totalFiles,
-                totalFilesSize,
-                totalFiles - completedFiles,
-                (int)((completedSize * 100) / totalFilesSize)
-            ));
-
-            LoggerService.AddLog(new
-            {
-                Name = BackupConfig.Name,
-                FileSource = file,
-                FileTarget = destinationFile,
-                FileTransferTime = transferTime,
-                Time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
-            });
         }
     }
 }
