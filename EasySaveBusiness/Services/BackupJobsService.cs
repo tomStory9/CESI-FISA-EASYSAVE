@@ -10,18 +10,36 @@ namespace EasySaveBusiness.Services
 {
     class BackupJobsService
     {
-        public Dictionary<int,BackupJobService> BackupJobs { get; }
+        public event EventHandler<List<BackupJobFullState>>? BackupJobFullStatesChanged;
 
-        public BackupJobsService(BackupConfigService backupConfigService, LoggerService loggerService)
+        public Dictionary<int, BackupJobService> BackupJobs { get; }
+
+        public List<BackupJobFullState> BackupJobFullStates
         {
-
-            BackupJobs = backupConfigService.BackupConfigs.Select(backupConfig => new KeyValuePair<int, BackupJobService>(
-                backupConfig.Id,
-                new BackupJobService(loggerService)
-            )).ToDictionary(x => x.Key, x => x.Value);
+            get
+            {
+                return [.. BackupJobs.Values.Select(job => job.FullState)];
+            }
+            private set
+            {
+                BackupJobFullStatesChanged?.Invoke(this, value);
+            }
         }
 
+        public BackupJobsService(BackupConfigService backupConfigService, LoggerService loggerService, EasySaveConfig easySaveConfig)
+        {
+            BackupJobs = backupConfigService.BackupConfigs.Select(backupConfig =>
+            {
+                var job = new BackupJobService(loggerService, backupConfig, easySaveConfig);
+                job.BackupJobFullStateChanged += OnBackupJobFullStateChanged;
+                return new KeyValuePair<int, BackupJobService>(backupConfig.Id, job);
+            }).ToDictionary(x => x.Key, x => x.Value);
+        }
+
+        private void OnBackupJobFullStateChanged(object? sender, BackupJobFullState e)
+        {
+            BackupJobFullStates = [.. BackupJobs.Values.Select(job => job.FullState)];
+            BackupJobFullStatesChanged?.Invoke(this, BackupJobFullStates);
+        }
     }
-
-
 }
