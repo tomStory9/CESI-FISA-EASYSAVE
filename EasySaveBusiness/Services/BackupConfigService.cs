@@ -39,7 +39,11 @@ namespace EasySaveBusiness.Services
         }
 
         public void AddBackupConfig(int id, BackupConfig config)
-        {
+        {   
+            if(BackupConfigs.Count()==5)
+            {
+                throw new InvalidOperationException("You can't add more than 5 backup configs.");
+            }
             if (config == null)
             {
                 throw new ArgumentNullException(nameof(config), "Backup configuration cannot be null.");
