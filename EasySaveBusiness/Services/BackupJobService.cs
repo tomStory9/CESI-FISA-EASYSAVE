@@ -20,13 +20,14 @@ namespace EasySaveBusiness.Services
             LoggerService = loggerService;
         }
 
-        public async Task ExecuteBackupAsync(BackupConfig job)
+        public async Task ExecuteBackupAsync(BackupConfig job, EasySaveConfig config)
         {
             Console.WriteLine($"Executing backup: {job.Name}");
 
             var files = Directory.GetFiles(job.SourceDirectory, "*", SearchOption.AllDirectories);
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
+
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
                 job.Name,
                 "",
@@ -40,12 +41,38 @@ namespace EasySaveBusiness.Services
 
             int completedFiles = 0;
             long completedSize = 0;
+            int i = 0;
 
-            foreach (var file in files)
+            while (i < files.Length)
             {
+                var file = files[i];
+
+                if (job.Type == BackupType.Differential && Process.GetProcessesByName(config.WorkApp).Length > 0)
+                {
+                    LoggerService.AddLog(new
+                    {
+                        Type = "Error",
+                        Description = "Backup job stopped because work app has been launched"
+                    });
+
+                    BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
+                        job.Name,
+                        "",
+                        "",
+                        BackupJobState.STOP,
+                        totalFiles,
+                        totalFilesSize,
+                        totalFiles - completedFiles,
+                        (int)((completedSize * 100) / totalFilesSize)
+                    ));
+
+                    return;
+                }
+
                 await ProcessFileAsync(job, file, completedFiles, completedSize, totalFiles, totalFilesSize);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
+                i++;
             }
 
             BackupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
@@ -72,8 +99,8 @@ namespace EasySaveBusiness.Services
             {
                 Directory.CreateDirectory(destinationDir);
             }
-
             Stopwatch stopwatch = Stopwatch.StartNew();
+
             if (job.Type == BackupType.Full || !File.Exists(destinationFile) ||
                 File.GetLastWriteTime(file) > File.GetLastWriteTime(destinationFile))
             {

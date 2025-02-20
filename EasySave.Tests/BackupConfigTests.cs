@@ -80,9 +80,9 @@ namespace EasySaveBusiness.Tests
 
             Assert.True(File.Exists(ConfigPath));
             var json = File.ReadAllText(ConfigPath);
-            var configs = JsonSerializer.Deserialize<Dictionary<int, BackupConfig>>(json);
-            Assert.True(configs.ContainsKey(1));
-            Assert.Equal(config.Name, configs[1].Name);
+            var configs = JsonSerializer.Deserialize<EasySaveConfig>(json);
+            Assert.True(configs.BackupConfigs.ContainsKey(1));
+            Assert.Equal(config.Name, configs.BackupConfigs[1].Name);
         }
     }
 }
