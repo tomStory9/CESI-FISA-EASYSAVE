@@ -1,19 +1,10 @@
 ﻿using EasySaveBusiness.Models;
 
-public class BackupConfig
+public class BackupConfig(int id, string name, string sourceDirectory, string targetDirectory, BackupType type)
 {
-    public int Id { get; }
-    public string Name { get; }
-    public string SourceDirectory { get; }
-    public string TargetDirectory { get; }
-    public BackupType Type { get; }
-
-    public BackupConfig(int id, string name, string sourceDirectory, string targetDirectory, BackupType type)
-    {
-        Id = id;
-        Name = name;
-        SourceDirectory = sourceDirectory;
-        TargetDirectory = targetDirectory;
-        Type = type;
-    }
+    public int Id { get; set; } = id;
+    public string Name { get; set; } = name;
+    public string SourceDirectory { get; set; } = sourceDirectory;
+    public string TargetDirectory { get; set; } = targetDirectory;
+    public BackupType Type { get; set; } = type;
 }

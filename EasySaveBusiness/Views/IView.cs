@@ -6,15 +6,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasySaveBusiness.Vues
+namespace EasySaveBusiness.Views
 {
     public interface IView
     {
         public void Init();
-        public UserChoice GetUserChoice();
+        public void RefreshBackupConfigs(List<BackupConfig> backupConfigs);
+        public void RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState);
         public void DisplayMessage(string message);
         public void DisplayError(string errorMessage);
-        public void DisplayBackupConfigs(Dictionary<int, BackupConfig> backupConfigs);
-        public void DisplayBackupJobFullState(BackupJobFullState backupJobFullState);
     }
 }

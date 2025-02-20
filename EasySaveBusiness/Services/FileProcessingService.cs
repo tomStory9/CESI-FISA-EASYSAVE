@@ -30,10 +30,10 @@ namespace EasySaveBusiness.Services
             }
             Stopwatch stopwatch = Stopwatch.StartNew();
 
-            if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
-            {
-                await Task.Run(() => File.Copy(file, destinationFile, true));
-            }
+            //if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
+            //{
+                File.Copy(file, destinationFile, true);
+            //}
             stopwatch.Stop();
             double transferTime = stopwatch.Elapsed.TotalMilliseconds;
 

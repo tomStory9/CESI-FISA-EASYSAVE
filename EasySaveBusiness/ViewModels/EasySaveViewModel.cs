@@ -1,6 +1,6 @@
 ﻿using EasySaveBusiness.Models;
 using EasySaveBusiness.Services;
-using EasySaveBusiness.Vues;
+using EasySaveBusiness.Views;
 using LoggerDLL.Services;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace EasySaveBusiness.ViewModels
 {
-    public class EasySaveViewModel(
+    /* public class EasySaveViewModel(
         BackupConfigService backupConfigService,
         BackupJobService backupService,
         LoggerService loggerService,
@@ -87,5 +87,5 @@ namespace EasySaveBusiness.ViewModels
         {
             View.DisplayBackupJobFullState(e);
         }
-    }
+    } */
 }

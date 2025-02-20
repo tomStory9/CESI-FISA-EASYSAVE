@@ -11,7 +11,7 @@ namespace EasySaveBusiness.Services
     {
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
-        public List<BackupConfig> BackupConfigs { get; private set; } = new List<BackupConfig>();
+        public List<BackupConfig> BackupConfigs { get; private set; } = [];
         public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON);
 
         public BackupConfigService()
@@ -27,7 +27,7 @@ namespace EasySaveBusiness.Services
                 {
                     string json = File.ReadAllText(ConfigPath);
                     EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json) ?? EasySaveConfig;
-                    BackupConfigs = EasySaveConfig.BackupConfigs;
+                    BackupConfigs = EasySaveConfig.BackupConfigs ?? [];
                 }
                 else
                 {

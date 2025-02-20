@@ -17,6 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Éléments de solution", "�
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySave.Tests", "EasySave.Tests\EasySave.Tests.csproj", "{74169BC2-C7B0-4C4B-A312-A04CC874F798}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySaveDesktop", "EasySaveDesktop\EasySaveDesktop.csproj", "{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7A80C36F-F980-44F9-AC42-B6496BDE7E4F} = {7A80C36F-F980-44F9-AC42-B6496BDE7E4F}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +40,10 @@ Global
 		{74169BC2-C7B0-4C4B-A312-A04CC874F798}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{74169BC2-C7B0-4C4B-A312-A04CC874F798}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{74169BC2-C7B0-4C4B-A312-A04CC874F798}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
