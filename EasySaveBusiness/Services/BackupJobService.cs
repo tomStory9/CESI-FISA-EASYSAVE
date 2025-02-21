@@ -18,6 +18,7 @@ namespace EasySaveBusiness.Services
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
         private WorkAppMonitorService WorkAppMonitorService { get; }
+        private SortBackupFileService SortBackupFileService { get; }
         private BackupJobFullState _FullState;
 
         public BackupJobFullState FullState
@@ -84,6 +85,7 @@ namespace EasySaveBusiness.Services
             Console.WriteLine($"Executing backup: {BackupConfig.Name}");
 
             var files = Directory.GetFiles(BackupConfig.SourceDirectory, "*", SearchOption.AllDirectories);
+            SortBackupFileService.SortFile(EasySaveConfig.PriorityFileExtension, files);
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
 

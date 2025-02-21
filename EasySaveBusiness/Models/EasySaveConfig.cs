@@ -11,13 +11,16 @@ namespace EasySaveBusiness.Models
     {
         public List<BackupConfig> BackupConfigs { get; }
         public string WorkApp { get; }
+        public List<string> PriorityFileExtension { get; }
         public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; }
 
-        public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType)
+        public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType, List<string> priorityFileExtension)
         {
             BackupConfigs = backupConfigs;
             WorkApp = workApp;
             LogType = logType;
+            PriorityFileExtension = priorityFileExtension;
+
         }
     }
 
