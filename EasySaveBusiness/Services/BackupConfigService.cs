@@ -40,7 +40,7 @@ namespace EasySaveBusiness.Services
                 throw new InvalidOperationException("Failed to initialize easySave configurations.", ex);
             }
         }
-        public void AddBackupConfig(int id, BackupConfig config)
+        public void AddBackupConfig(BackupConfig config)
         {   
             if(BackupConfigs.Count()==5)
             {
