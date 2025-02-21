@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace EasySaveBusiness.Controllers
 {
     public class EasySaveController(
-                BackupConfigService backupConfigService,
+                EasySaveConfigService backupConfigService,
                 BackupJobsService backupJobsService,
                 LoggerService loggerService,
                 BackupFullStateLogger backupFullStateLogger
@@ -19,7 +19,7 @@ namespace EasySaveBusiness.Controllers
     {
         public IView View { private get; set; }
 
-        private readonly BackupConfigService _backupConfigService = backupConfigService;
+        private readonly EasySaveConfigService _backupConfigService = backupConfigService;
         private readonly BackupJobsService _backupJobsService = backupJobsService;
         private readonly LoggerService _loggerService = loggerService;
         private readonly BackupFullStateLogger _backupFullStateLogger = backupFullStateLogger;

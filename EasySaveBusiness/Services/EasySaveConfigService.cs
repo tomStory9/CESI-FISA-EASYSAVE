@@ -7,14 +7,14 @@ using System.Text.Json;
 
 namespace EasySaveBusiness.Services
 {
-    public class BackupConfigService
+    public class EasySaveConfigService
     {
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
         public List<BackupConfig> BackupConfigs { get; private set; } = [];
         public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON,new List<string>());
 
-        public BackupConfigService()
+        public EasySaveConfigService()
         {
             Init();
         }
@@ -80,7 +80,7 @@ namespace EasySaveBusiness.Services
                 {
                     Directory.CreateDirectory(AppDataPath);
                 }
-                EasySaveConfig = new EasySaveConfig(BackupConfigs, EasySaveConfig.WorkApp, EasySaveConfig.LogType);
+                EasySaveConfig = new EasySaveConfig(BackupConfigs, EasySaveConfig.WorkApp, EasySaveConfig.LogType, EasySaveConfig.PriorityFileExtension);
                 string json = JsonSerializer.Serialize(EasySaveConfig, new JsonSerializerOptions
                 {
                     WriteIndented = true

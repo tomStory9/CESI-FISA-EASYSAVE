@@ -17,7 +17,7 @@ namespace EasySaveBusiness.Services
         public List<BackupJobFullState> BackupJobFullStates { get; private set; }
 
         public BackupJobsService(
-            BackupConfigService backupConfigService,
+            EasySaveConfigService backupConfigService,
             LoggerService loggerService,
             FileProcessingService fileProcessingService,
             WorkAppMonitorService workAppMonitorService

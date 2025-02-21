@@ -18,7 +18,7 @@ class Program
             var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
 
             var loggerService = new LoggerService(logPath, LoggerDLL.Models.LogType.LogTypeEnum.JSON);
-            var backupConfigService = new BackupConfigService();
+            var backupConfigService = new EasySaveConfigService();
             var backupFullStateLogger = new BackupFullStateLogger(fullStatePath);
             var backupService = new BackupJobService(loggerService);
             var argParserService = new ArgParserService(args);
