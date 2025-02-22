@@ -20,7 +20,7 @@ namespace EasySaveBusiness.Services
 
         public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, EventHandler<BackupJobFullState>? backupJobFullStateChanged)
         {
-            string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
+            /* string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
             string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
             string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
 
@@ -56,7 +56,7 @@ namespace EasySaveBusiness.Services
                 FileTarget = destinationFile,
                 FileTransferTime = transferTime,
                 Time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
-            });
+            }); */
         }
     }
 }

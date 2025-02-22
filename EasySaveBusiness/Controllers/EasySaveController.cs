@@ -37,8 +37,17 @@ namespace EasySaveBusiness.Controllers
             var id = _backupConfigService.BackupConfigs.Count != 0
                 ? _backupConfigService.BackupConfigs.Max(bc => bc.Id) + 1
                 : 1;
-            config.Id = id;
-            _backupConfigService.AddBackupConfig(config);
+            _backupConfigService.AddBackupConfig(config with { Id = id });
+        }
+
+        public void EditBackupConfig(BackupConfig config)
+        {
+            _backupConfigService.EditBackupConfig(config);
+        }
+
+        public void OverrideBackupConfigs(List<BackupConfig> configs)
+        {
+            _backupConfigService.OverrideBackupConfigs(configs);
         }
 
         public void RemoveBackupConfig(int id)

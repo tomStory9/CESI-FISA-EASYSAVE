@@ -6,45 +6,25 @@ using System.Threading.Tasks;
 
 namespace EasySaveBusiness.Models
 {
-    public class BackupJobFullState(
-        int id,
-        string name,
-        string sourceFilePath,
-        string targetFilePath,
-        BackupJobState state,
-        long totalFilesToCopy,
-        long totalFilesSize,
-        long nbFilesLeftToDo,
-        int progression
-    ) {
-        public int Id { get; } = id;
-        public string Name { get; } = name;
-        public string SourceFilePath { get; } = sourceFilePath;
-        public string TargetFilePath { get; } = targetFilePath;
-        public BackupJobState State { get; } = state;
-        public long TotalFilesToCopy { get; } = totalFilesToCopy;
-        public long TotalFilesSize { get; } = totalFilesSize;
-        public long NbFilesLeftToDo { get; } = nbFilesLeftToDo;
-        public int Progression { get; } = progression;
+    public record BackupJobFullState : BackupConfig {
+        public string? SourceFilePath { get; init; }
+        public string? TargetFilePath { get; init; }
+        public BackupJobState State { get; init; } = BackupJobState.STOPPED;
+        public long TotalFilesToCopy { get; init; }
+        public long TotalFilesSize { get; init; }
+        public long NbFilesLeftToDo { get; init; }
+        public int Progression { get; init; }
 
-        public static BackupJobFullState Default(
-            int id,
-            string name,
-            string sourceFilePath,
-            string targetFilePath
-        )
+        public static BackupJobFullState FromBackupConfig(BackupConfig backupConfig)
         {
-            return new BackupJobFullState(
-                id,
-                name,
-                sourceFilePath,
-                targetFilePath,
-                BackupJobState.STOPPED,
-                0,
-                0,
-                0,
-                0
-            );
+            return new BackupJobFullState
+            {
+                Id = backupConfig.Id,
+                Name = backupConfig.Name,
+                SourceDirectory = backupConfig.SourceDirectory,
+                TargetDirectory = backupConfig.TargetDirectory,
+                Type = backupConfig.Type,
+            };
         }
     }
 }

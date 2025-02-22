@@ -60,6 +60,28 @@ namespace EasySaveBusiness.Services
             Save();
         }
 
+        public void EditBackupConfig(BackupConfig config)
+        {
+            if (config == null)
+            {
+                throw new ArgumentNullException(nameof(config), "Backup configuration cannot be null.");
+            }
+            var existingConfig = BackupConfigs.FirstOrDefault(bc => bc.Id == config.Id);
+            if (existingConfig == null)
+            {
+                throw new KeyNotFoundException($"Backup job with ID {config.Id} not found.");
+            }
+            BackupConfigs.Remove(existingConfig);
+            BackupConfigs.Add(config);
+            Save();
+        }
+
+        public void OverrideBackupConfigs(List<BackupConfig> configs)
+        {
+            BackupConfigs = configs;
+            Save();
+        }
+
         public void RemoveBackupConfig(int id)
         {
             var config = BackupConfigs.FirstOrDefault(bc => bc.Id == id);

@@ -40,7 +40,7 @@ namespace EasySaveBusiness.Services
             EasySaveConfig = easySaveConfig;
             FileProcessingService = fileProcessingService;
             WorkAppMonitorService = workAppMonitorService;
-            _FullState = BackupJobFullState.Default(backupConfig.Id, backupConfig.Name, backupConfig.SourceDirectory, backupConfig.TargetDirectory);
+            _FullState = BackupJobFullState.FromBackupConfig(backupConfig);
 
             WorkAppMonitorService.WorkAppStopped += OnWorkAppStopped;
         }
@@ -65,7 +65,7 @@ namespace EasySaveBusiness.Services
                 throw new Exception("Backup job is not running");
             }
 
-            UpdateFullState(BackupJobState.PAUSED);
+            _FullState = _FullState with { State = BackupJobState.PAUSED };
             _cancellationTokenSource?.Cancel();
         }
 
@@ -76,7 +76,7 @@ namespace EasySaveBusiness.Services
                 throw new Exception("Backup job is not running");
             }
 
-            UpdateFullState(BackupJobState.STOPPED);
+            _FullState = _FullState with { State = BackupJobState.STOPPED };
             _cancellationTokenSource?.Cancel();
         }
 
@@ -89,7 +89,13 @@ namespace EasySaveBusiness.Services
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
 
-            UpdateFullState(BackupJobState.ACTIVE, totalFiles, totalFilesSize, totalFiles, 0);
+            _FullState = _FullState with {
+                State = BackupJobState.ACTIVE,
+                TotalFilesToCopy = totalFiles,
+                TotalFilesSize = totalFilesSize,
+                NbFilesLeftToDo = totalFiles,
+                Progression = 0
+            };
 
             int completedFiles = 0;
             long completedSize = 0;
@@ -99,7 +105,11 @@ namespace EasySaveBusiness.Services
             {
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    UpdateFullState(FullState.State, totalFiles, totalFilesSize, totalFiles - completedFiles, (int)((completedSize * 100) / totalFilesSize));
+                    _FullState = _FullState with
+                    {
+                        NbFilesLeftToDo = totalFiles - completedFiles,
+                        Progression = (int)((completedSize * 100) / totalFilesSize)
+                    };
                     return;
                 }
 
@@ -113,7 +123,10 @@ namespace EasySaveBusiness.Services
                         Description = "Backup job stopped because work app has been launched"
                     });
 
-                    UpdateFullState(BackupJobState.STOPPED, totalFiles, totalFilesSize, totalFiles - completedFiles, (int)((completedSize * 100) / totalFilesSize));
+                    _FullState = _FullState with
+                    {
+                        State = BackupJobState.STOPPED,
+                    };
                     return;
                 }
 
@@ -123,7 +136,7 @@ namespace EasySaveBusiness.Services
                 i++;
             }
 
-            UpdateFullState(BackupJobState.STOPPED, totalFiles, totalFilesSize, 0, 100);
+            _FullState = BackupJobFullState.FromBackupConfig(BackupConfig);
 
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
@@ -152,22 +165,13 @@ namespace EasySaveBusiness.Services
             stopwatch.Stop();
             double transferTime = stopwatch.Elapsed.TotalMilliseconds;
 
-            UpdateFullState(BackupJobState.ACTIVE, totalFiles, totalFilesSize, totalFiles - completedFiles, (int)((completedSize * 100) / totalFilesSize), file, destinationFile);
-        }
-
-        private void UpdateFullState(BackupJobState state, long totalFiles = 0, long totalFilesSize = 0, long nbFilesLeftToDo = 0, int progression = 0, string sourceFilePath = "", string targetFilePath = "")
-        {
-            FullState = new BackupJobFullState(
-                BackupConfig.Id,
-                BackupConfig.Name,
-                sourceFilePath,
-                targetFilePath,
-                state,
-                totalFiles,
-                totalFilesSize,
-                nbFilesLeftToDo,
-                progression
-            );
+            _FullState = _FullState with
+            {
+                NbFilesLeftToDo = totalFiles - completedFiles,
+                Progression = (int)((completedSize * 100) / totalFilesSize),
+                SourceFilePath = file,
+                TargetFilePath = destinationFile
+            };
         }
 
         private void OnWorkAppStopped(object? sender, EventArgs e)
