@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySaveDesktop", "EasySave
 		{7A80C36F-F980-44F9-AC42-B6496BDE7E4F} = {7A80C36F-F980-44F9-AC42-B6496BDE7E4F}
 	EndProjectSection
 EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "EasySaveSetup", "EasySaveSetup\EasySaveSetup.vdproj", "{F4E4916D-DCE1-5A3E-F471-E55A5C5FE3EF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,6 +46,10 @@ Global
 		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77BD3125-F4DC-4C2D-AC2B-589D6DB7D5AB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4E4916D-DCE1-5A3E-F471-E55A5C5FE3EF}.Debug|Any CPU.ActiveCfg = Debug
+		{F4E4916D-DCE1-5A3E-F471-E55A5C5FE3EF}.Debug|Any CPU.Build.0 = Debug
+		{F4E4916D-DCE1-5A3E-F471-E55A5C5FE3EF}.Release|Any CPU.ActiveCfg = Release
+		{F4E4916D-DCE1-5A3E-F471-E55A5C5FE3EF}.Release|Any CPU.Build.0 = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
