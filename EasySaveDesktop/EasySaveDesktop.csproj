@@ -14,7 +14,18 @@
   </ItemGroup>
 
   <ItemGroup>
+    <AvaloniaXaml Remove="Models\**" />
+    <Compile Remove="Models\**" />
+    <EmbeddedResource Remove="Models\**" />
+    <None Remove="Models\**" />
+  </ItemGroup>
+
+  <ItemGroup>
 	<ProjectReference Include="..\EasySaveBusiness\EasySaveBusiness.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+	<ProjectReference Include="..\EasySaveClient\EasySaveClient.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -33,9 +44,5 @@
     <PackageReference Include="Material.Avalonia.DataGrid" Version="3.9.2" />
     <PackageReference Include="Material.Icons.Avalonia" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\" />
   </ItemGroup>
 </Project>

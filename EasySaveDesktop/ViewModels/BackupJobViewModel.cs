@@ -12,7 +12,7 @@ namespace EasySaveDesktop.ViewModels
 {
     public partial class BackupJobViewModel : ViewModelBase
     {
-        private readonly EasySaveController _controller;
+        private readonly IEasySaveController _controller;
 
         public int Id { get; }
 
@@ -55,7 +55,7 @@ namespace EasySaveDesktop.ViewModels
 
         private bool IsReadOnly => State != BackupJobState.STOPPED;
 
-        public BackupJobViewModel(EasySaveController controller, BackupJobFullState backupJobFullState)
+        public BackupJobViewModel(IEasySaveController controller, BackupJobFullState backupJobFullState)
         {
             _controller = controller;
 

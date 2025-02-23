@@ -2,27 +2,30 @@
 using EasySaveBusiness.Services;
 using EasySaveBusiness.Views;
 using LoggerDLL.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace EasySaveBusiness.Controllers
 {
-    public class EasySaveController(
-                EasySaveConfigService backupConfigService,
-                BackupJobsService backupJobsService,
-                LoggerService loggerService,
-                BackupFullStateLogger backupFullStateLogger
-            )
+    public class EasySaveController : IEasySaveController
     {
-        public IView View { private get; set; }
+        public IView View { get; set; }
 
-        private readonly EasySaveConfigService _backupConfigService = backupConfigService;
-        private readonly BackupJobsService _backupJobsService = backupJobsService;
-        private readonly LoggerService _loggerService = loggerService;
-        private readonly BackupFullStateLogger _backupFullStateLogger = backupFullStateLogger;
+        private readonly EasySaveConfigService _backupConfigService;
+        private readonly BackupJobsService _backupJobsService;
+        private readonly LoggerService _loggerService;
+        private readonly BackupFullStateLogger _backupFullStateLogger;
+
+        public EasySaveController(
+            EasySaveConfigService backupConfigService,
+            BackupJobsService backupJobsService,
+            LoggerService loggerService,
+            BackupFullStateLogger backupFullStateLogger
+        )
+        {
+            _backupConfigService = backupConfigService;
+            _backupJobsService = backupJobsService;
+            _loggerService = loggerService;
+            _backupFullStateLogger = backupFullStateLogger;
+        }
 
         public void Init()
         {
@@ -60,7 +63,7 @@ namespace EasySaveBusiness.Controllers
             _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Start();
         }
 
-        private void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)
+        public void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)
         {
             View.RefreshBackupJobFullStates(backupJobFullStates);
         }

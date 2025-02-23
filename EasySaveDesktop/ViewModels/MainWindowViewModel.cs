@@ -14,7 +14,7 @@ namespace EasySaveDesktop.ViewModels
 {
     public partial class MainWindowViewModel : ViewModelBase, IView
     {
-        public EasySaveController Controller { private get; set; }
+        public IEasySaveController Controller { get; set; }
 
         public string Greeting { get; } = "Welcome to Avalonia!";
 

@@ -1,4 +1,5 @@
-﻿using EasySaveBusiness.Models;
+﻿using EasySaveBusiness.Controllers;
+using EasySaveBusiness.Models;
 using EasySaveBusiness.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,8 @@ namespace EasySaveBusiness.Views
 {
     public interface IView
     {
+        public IEasySaveController Controller { protected get; set; }
+
         public void Init();
         public void RefreshBackupConfigs(List<BackupConfig> backupConfigs);
         public void RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState);
