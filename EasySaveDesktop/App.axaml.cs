@@ -29,7 +29,7 @@ public partial class App : Application
         var services = collection.BuildServiceProvider();
 
         var vm = services.GetRequiredService<MainWindowViewModel>();
-        var controller = services.GetRequiredService<EasySaveController>();
+        var controller = services.GetRequiredService<IEasySaveController>();
 
         vm.Controller = controller;
         controller.View = vm;

@@ -1,7 +1,5 @@
 ﻿using EasySaveBusiness.Controllers;
 using EasySaveBusiness.Services;
-using EasySaveClient.Controllers;
-using EasySaveDesktop.ViewModels;
 using LoggerDLL.Services;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -12,13 +10,13 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasySaveDesktop.Extensions
+namespace EasySaveServer.Extensions
 {
     public static class ServiceCollectionExtensions
     {
         public static void AddCommonServices(this IServiceCollection services)
         {
-            /* var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
+            var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
             var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
             var workAppName = "caca.exe";
 
@@ -36,9 +34,13 @@ namespace EasySaveDesktop.Extensions
                 provider.GetRequiredService<LoggerService>(),
                 provider.GetRequiredService<FileProcessingService>(),
                 provider.GetRequiredService<WorkAppMonitorService>()
-            )); */
-            services.AddSingleton<IEasySaveController, RemoteEasySaveController>();
-            services.AddSingleton<MainWindowViewModel>();
+            ));
+            services.AddSingleton<IEasySaveController>(provider => new EasySaveController(
+                provider.GetRequiredService<EasySaveConfigService>(),
+                provider.GetRequiredService<BackupJobsService>(),
+                provider.GetRequiredService<LoggerService>(),
+                provider.GetRequiredService<BackupFullStateLogger>()
+            ));
         }
     }
 }
