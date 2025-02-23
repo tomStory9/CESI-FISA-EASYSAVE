@@ -10,7 +10,7 @@ namespace EasySaveBusiness.Tests
 {
     public class BackupConfigServiceTests
     {
-        private readonly BackupConfigService _service;
+        private readonly EasySaveConfigService _service;
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
 
@@ -22,7 +22,7 @@ namespace EasySaveBusiness.Tests
                 Directory.Delete(AppDataPath, true);
             }
 
-            _service = new BackupConfigService();
+            _service = new EasySaveConfigService();
         }
 
         [Fact]

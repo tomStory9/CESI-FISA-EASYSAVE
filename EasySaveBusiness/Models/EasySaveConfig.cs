@@ -3,15 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EasySaveBusiness.Services;
 using LoggerDLL.Models;
 namespace EasySaveBusiness.Models
 {
-    public class EasySaveConfig(Dictionary<int, BackupConfig> backupConfigs,string WorkApp, LoggerDLL.Models.LogType.LogTypeEnum LogType)
+    public class EasySaveConfig
     {
-        public Dictionary<int, BackupConfig> BackupConfigs { get; } = backupConfigs;
-        public string WorkApp { get; } = WorkApp;
+        public List<BackupConfig> BackupConfigs { get; }
+        public string WorkApp { get; }
+        public List<string> PriorityFileExtension { get; }
+        public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; }
 
-        public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; } = LogType;
+        public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType, List<string> priorityFileExtension)
+        {
+            BackupConfigs = backupConfigs;
+            WorkApp = workApp;
+            LogType = logType;
+            PriorityFileExtension = priorityFileExtension;
 
+        }
     }
+
 }
