@@ -9,6 +9,9 @@ using System;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using DialogHostAvalonia;
+using EasySaveDesktop.Models;
+using Tmds.DBus.Protocol;
 
 namespace EasySaveDesktop.ViewModels
 {
@@ -90,7 +93,8 @@ namespace EasySaveDesktop.ViewModels
 
         public void DisplayError(string errorMessage)
         {
-            throw new System.NotImplementedException();
+            Console.WriteLine(errorMessage);
+            DialogHost.Show(new ErrorDialog(errorMessage));
         }
 
         public void DisplayMessage(string message)

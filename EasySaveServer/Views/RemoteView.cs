@@ -4,6 +4,7 @@ using EasySaveBusiness.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,6 +13,7 @@ namespace EasySaveServer.Views
     class RemoteView : IView
     {
         private readonly SocketServer _server;
+        private readonly TcpClient _client;
         public IEasySaveController Controller { get; set; }
 
         public RemoteView(SocketServer server)

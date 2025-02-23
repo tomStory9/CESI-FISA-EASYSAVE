@@ -44,6 +44,8 @@ public class SocketServer : BackgroundService
         using var stream = client.GetStream();
         var buffer = new byte[1024];
 
+        Console.WriteLine("New client");
+
         while (client.Connected && !cancellationToken.IsCancellationRequested)
         {
             int bytesRead = await stream.ReadAsync(buffer, cancellationToken);
@@ -53,39 +55,66 @@ public class SocketServer : BackgroundService
             HandleClientRequest(message, client);
         }
 
+        Console.WriteLine("Client disconnected");
+
         _clients.Remove(client);
         client.Close();
     }
 
     private void HandleClientRequest(string message, TcpClient client)
     {
-        var request = JsonSerializer.Deserialize<Dictionary<string, object>>(message);
-
-        if (request == null || !request.ContainsKey("command"))
+        Dictionary<string, object>? request;
+        try
+        {
+            request = JsonSerializer.Deserialize<Dictionary<string, object>>(message);
+        }
+        catch (JsonException ex)
+        {
+            Console.WriteLine(ex.Message);
+            SendErrorMessage(client, "Invalid message format");
             return;
+        }
 
-        string command = request["command"]?.ToString() ?? string.Empty;
+        if (request == null || !request.ContainsKey("Command"))
+        {
+            Console.WriteLine("Invalid message format");
+            SendErrorMessage(client, "Invalid message format");
+            return;
+        }
+
+        string command = request["Command"]?.ToString() ?? string.Empty;
 
         Console.WriteLine($"Command received: {command}");
 
-        switch (command)
+        try
         {
-            case "Init":
-                _controller.Init();
-                break;
-            case "StartBackupJob":
-                if (int.TryParse(request["payload"]?.ToString(), out int id))
-                {
-                    _controller.StartBackupJob(id);
-                }
-                break;
-            case "AddBackupConfig":
-                var config = JsonSerializer.Deserialize<BackupConfig>(request["payload"]?.ToString() ?? string.Empty);
-                if (config != null)
-                {
-                    _controller.AddBackupConfig(config);
-                }
-                break;
+            switch (command)
+            {
+                case "Init":
+                    _controller.Init();
+                    break;
+                case "StartBackupJob":
+                    if (int.TryParse(request["Payload"]?.ToString(), out int id))
+                    {
+                        _controller.StartBackupJob(id);
+                    }
+                    break;
+                case "AddBackupConfig":
+                    var config = JsonSerializer.Deserialize<BackupConfig>(request["Payload"]?.ToString() ?? string.Empty);
+                    if (config != null)
+                    {
+                        _controller.AddBackupConfig(config);
+                    }
+                    break;
+                default:
+                    SendErrorMessage(client, $"Unknown command '{command}'");
+                    break;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Erreur lors du traitement de la commande '{command}': {ex.Message}");
+            SendErrorMessage(client, $"Error processing command '{command}'");
         }
     }
 
@@ -103,5 +132,19 @@ public class SocketServer : BackgroundService
         {
             client.GetStream().Write(data);
         }
+    }
+
+    private void SendErrorMessage(TcpClient client, string errorMessage)
+    {
+        var errorResponse = new
+        {
+            Event = "DisplayError",
+            Payload = errorMessage
+        };
+
+        string json = JsonSerializer.Serialize(errorResponse);
+        byte[] data = Encoding.UTF8.GetBytes(json);
+
+        client.GetStream().Write(data);
     }
 }
