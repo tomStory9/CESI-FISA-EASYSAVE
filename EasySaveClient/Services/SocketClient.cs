@@ -32,7 +32,7 @@ namespace EasySaveClient.Services
 
         public async Task SendCommandAsync(string command, object payload)
         {
-            var message = new { command, payload };
+            var message = new { Command = command, Payload = payload };
             string json = JsonSerializer.Serialize(message);
             byte[] data = Encoding.UTF8.GetBytes(json);
             await _stream.WriteAsync(data);
@@ -64,6 +64,9 @@ namespace EasySaveClient.Services
                             break;
                         case "DisplayMessage":
                             _view.DisplayMessage(response["Payload"].ToString());
+                            break;
+                        case "DisplayError":
+                            _view.DisplayError(response["Payload"].ToString());
                             break;
                     }
                 }

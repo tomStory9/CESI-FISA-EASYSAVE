@@ -1,10 +1,12 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:EasySaveDesktop.ViewModels"
+		xmlns:models="clr-namespace:EasySaveDesktop.Models"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
 		xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+		xmlns:dialogHost="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="EasySaveDesktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
@@ -17,41 +19,58 @@
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid>
-        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-            <Button IsVisible="{Binding ShowMassActionButtons}" Content="Start All" Command="{Binding StartAllCommand}" />
-            <DataGrid
-                Margin="20"
-                ItemsSource="{Binding BackupJobs, Mode=TwoWay}"
-                IsReadOnly="False"
-                GridLinesVisibility="All"
-                BorderThickness="1"
-                BorderBrush="Gray">
-                <DataGrid.Columns>
-                    <DataGridCheckBoxColumn Header="Checked" Binding="{Binding IsChecked}" Width="50"/>
-                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
-                    <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                    <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                    <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                    <DataGridTemplateColumn Header="">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Button Content="Start" Command="{Binding StartCommand}" CommandParameter="{Binding}"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
-        </StackPanel>
+	<Window.DataTemplates>
+	  <DataTemplate DataType="models:ErrorDialog">
+			<StackPanel>
+				<TextBlock Classes="Headline6">Error</TextBlock>
+				<TextBlock Classes="Body1"
+						   TextAlignment="Center"
+						   Text="{Binding Message}" />
+				<Button Margin="0 8 0 0"
+						Command="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType=dialogHost:DialogHost}, Path=CloseDialogCommand}">
+					Close
+				</Button>
+			</StackPanel>
+		</DataTemplate>
+	</Window.DataTemplates>
 
-        <Canvas>
-            <controls:FloatingButton
-				Canvas.Right="20"
-				Canvas.Bottom="20"
-				Content="{materialIcons:MaterialIconExt Kind=Plus}"
-				Command="{Binding OpenCreateBackupConfigWindowCommand}"
+	<dialogHost:DialogHost CloseOnClickAway="True">
+		<Grid>
+			<StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+				<Button IsVisible="{Binding ShowMassActionButtons}" Content="Start All" Command="{Binding StartAllCommand}" />
+				<DataGrid
+					Margin="20"
+					ItemsSource="{Binding BackupJobs, Mode=TwoWay}"
+					IsReadOnly="False"
+					GridLinesVisibility="All"
+					BorderThickness="1"
+					BorderBrush="Gray">
+					<DataGrid.Columns>
+						<DataGridCheckBoxColumn Header="Checked" Binding="{Binding IsChecked}" Width="50"/>
+						<DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
+						<DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="150"/>
+						<DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
+						<DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
+						<DataGridTemplateColumn Header="">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button Content="Start" Command="{Binding StartCommand}" CommandParameter="{Binding}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+					</DataGrid.Columns>
+				</DataGrid>
+			</StackPanel>
+
+			<Canvas>
+				<controls:FloatingButton
+					Canvas.Right="20"
+					Canvas.Bottom="20"
+					Content="{materialIcons:MaterialIconExt Kind=Plus}"
+					Command="{Binding OpenCreateBackupConfigWindowCommand}"
 			/>
-        </Canvas>
-    </Grid>
+			</Canvas>
+		</Grid>
+	</dialogHost:DialogHost>
 
 </Window>
