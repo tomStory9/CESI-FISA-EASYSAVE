@@ -1,62 +1,50 @@
 using EasySaveBusiness.Models;
+using EasySaveBusiness.Services;
 using LoggerDLL.Services;
-using System;
 using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
 
-namespace EasySaveBusiness.Services
+public class FileProcessingService
 {
-    public class FileProcessingService
+    private readonly LoggerService _loggerService;
+    private readonly DifferentialBackupVerifierService _differentialBackupVerifierService;
+    private readonly BackupJobService _backupJobService;
+
+    public FileProcessingService(LoggerService loggerService, DifferentialBackupVerifierService differentialBackupVerifierService, BackupJobService backupJobService)
     {
-        private readonly LoggerService _loggerService;
-        private readonly DifferentialBackupVerifierService _differentialBackupVerifierService;
+        _differentialBackupVerifierService = differentialBackupVerifierService;
+        _loggerService = loggerService;
+        _backupJobService = backupJobService;
+    }
 
-        public FileProcessingService(LoggerService loggerService, DifferentialBackupVerifierService differentialBackupVerifierService)
+    public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
+    {
+        string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
+        string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
+        string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
+
+        if (!Directory.Exists(destinationDir))
         {
-            _differentialBackupVerifierService = differentialBackupVerifierService;
-            _loggerService = loggerService;
+            Directory.CreateDirectory(destinationDir);
+        }
+        Stopwatch stopwatch = Stopwatch.StartNew();
+
+        using (FileStream sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
+        using (FileStream destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+        {
+            await sourceStream.CopyToAsync(destinationStream);
         }
 
-        public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, EventHandler<BackupJobFullState>? backupJobFullStateChanged)
+        stopwatch.Stop();
+        double transferTime = stopwatch.Elapsed.TotalMilliseconds;
+
+        var newState = _backupJobService.FullState with
         {
-            /* string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
-            string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
-            string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
+            NbFilesLeftToDo = totalFiles - completedFiles,
+            Progression = (int)((completedSize * 100) / totalFilesSize),
+            SourceFilePath = file,
+            TargetFilePath = destinationFile
+        };
 
-            if (!Directory.Exists(destinationDir))
-            {
-                Directory.CreateDirectory(destinationDir);
-            }
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            //if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
-            //{
-                File.Copy(file, destinationFile, true);
-            //}
-            stopwatch.Stop();
-            double transferTime = stopwatch.Elapsed.TotalMilliseconds;
-
-            backupJobFullStateChanged?.Invoke(this, new BackupJobFullState(
-                backupConfig.Id,
-                backupConfig.Name,
-                file,
-                destinationFile,
-                BackupJobState.ACTIVE,
-                totalFiles,
-                totalFilesSize,
-                totalFiles - completedFiles,
-                (int)((completedSize * 100) / totalFilesSize)
-            ));
-
-            _loggerService.AddLog(new
-            {
-                Name = backupConfig.Name,
-                FileSource = file,
-                FileTarget = destinationFile,
-                FileTransferTime = transferTime,
-                Time = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")
-            }); */
-        }
+        _backupJobService.UpdateBackupJobFullState(newState);
     }
 }

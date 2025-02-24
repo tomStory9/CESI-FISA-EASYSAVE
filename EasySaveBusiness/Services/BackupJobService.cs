@@ -181,5 +181,10 @@ namespace EasySaveBusiness.Services
                 Start();
             }
         }
+        public void UpdateBackupJobFullState(BackupJobFullState newState)
+        {
+            _FullState = newState;
+            BackupJobFullStateChanged?.Invoke(this, _FullState);
+        }
     }
 }

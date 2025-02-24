@@ -13,16 +13,17 @@ namespace EasySaveBusiness.Models
         public string WorkApp { get; }
         public List<string> PriorityFileExtension { get; }
         public int NetworkKoLimit { get; }
+        public string NetworkInterfaceName { get; }
         public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; }
 
-        public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType, List<string> priorityFileExtension , int NetworkKoUsageLimit)
+        public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType, List<string> priorityFileExtension , int networkKoUsageLimit , string networkInterfaceName)
         {
             BackupConfigs = backupConfigs;
             WorkApp = workApp;
             LogType = logType;
             PriorityFileExtension = priorityFileExtension;
-            NetworkKoLimit = NetworkKoUsageLimit;
-
+            NetworkKoLimit = networkKoUsageLimit;
+            NetworkInterfaceName = networkInterfaceName;
         }
     }
 

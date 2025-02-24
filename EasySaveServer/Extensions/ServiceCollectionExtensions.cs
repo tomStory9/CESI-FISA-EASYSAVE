@@ -25,7 +25,8 @@ namespace EasySaveServer.Extensions
             services.AddSingleton<DifferentialBackupVerifierService>();
             services.AddSingleton(provider => new FileProcessingService(
                 provider.GetRequiredService<LoggerService>(),
-                provider.GetRequiredService<DifferentialBackupVerifierService>()
+                provider.GetRequiredService<DifferentialBackupVerifierService>(),
+                provider.GetRequiredService<BackupJobService>()
             ));
             services.AddSingleton(provider => new WorkAppMonitorService(workAppName));
             services.AddSingleton(provider => new BackupFullStateLogger(fullStatePath));
