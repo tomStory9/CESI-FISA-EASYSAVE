@@ -16,7 +16,7 @@ public class FileProcessingService
         _backupJobService = backupJobService;
     }
 
-    public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
+    public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, ManualResetEventSlim lockEvent, object lockObject)
     {
         string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
         string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
@@ -28,14 +28,26 @@ public class FileProcessingService
         }
         Stopwatch stopwatch = Stopwatch.StartNew();
 
-        using (FileStream sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-        using (FileStream destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+        if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig, file, destinationFile))
         {
-            await sourceStream.CopyToAsync(destinationStream);
+            using (FileStream sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
+            using (FileStream destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+            {
+                await sourceStream.CopyToAsync(destinationStream);
+            }
         }
 
         stopwatch.Stop();
         double transferTime = stopwatch.Elapsed.TotalMilliseconds;
+
+        lock (lockObject)
+        {
+            if (IsNetworkUsageExceeded.IsBigFileProcessing)
+            {
+                lockEvent.Set();
+                IsNetworkUsageExceeded.IsBigFileProcessing = false;
+            }
+        }
 
         var newState = _backupJobService.FullState with
         {
@@ -47,4 +59,5 @@ public class FileProcessingService
 
         _backupJobService.UpdateBackupJobFullState(newState);
     }
+
 }

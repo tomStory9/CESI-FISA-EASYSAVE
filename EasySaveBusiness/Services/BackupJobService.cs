@@ -18,6 +18,7 @@ namespace EasySaveBusiness.Services
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
         private WorkAppMonitorService WorkAppMonitorService { get; }
+        private IsNetworkUsageExceeded isNetworkUsageExceed { get; }
         private SortBackupFileService SortBackupFileService { get; }
         private BackupJobFullState _FullState;
 
@@ -89,7 +90,8 @@ namespace EasySaveBusiness.Services
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
 
-            _FullState = _FullState with {
+            _FullState = _FullState with
+            {
                 State = BackupJobState.ACTIVE,
                 TotalFilesToCopy = totalFiles,
                 TotalFilesSize = totalFilesSize,
@@ -100,6 +102,8 @@ namespace EasySaveBusiness.Services
             int completedFiles = 0;
             long completedSize = 0;
             int i = 0;
+            var lockEvent = new ManualResetEventSlim(true);
+            object lockObject = new object();
 
             while (i < files.Length)
             {
@@ -130,7 +134,34 @@ namespace EasySaveBusiness.Services
                     return;
                 }
 
-                await ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize);
+                lock (lockObject)
+                {
+                    if (IsNetworkUsageExceeded.IsBigFileProcessing)
+                    {
+                        if (file.Length >= EasySaveConfig.SizeLimit)
+                        {
+                            if (files.Length <= i + 1)
+                            {
+                                // lock my backupjob until isNetworkUsageExceeded is false
+                                lockEvent.Reset();
+                                lockEvent.Wait(cancellationToken);
+                            }
+                            else
+                            {
+                                var BigFile = file;
+                                file = files[i + 1];
+                                files[i + 1] = BigFile;
+                            }
+                        }
+                    }
+
+                    if (file.Length >= EasySaveConfig.SizeLimit)
+                    {
+                        IsNetworkUsageExceeded.IsBigFileProcessing = true;
+                    }
+                }
+
+                await FileProcessingService.ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject);
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
@@ -141,38 +172,7 @@ namespace EasySaveBusiness.Services
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
 
-        public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
-        {
-            string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
-            string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
-            string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
 
-            if (!Directory.Exists(destinationDir))
-            {
-                Directory.CreateDirectory(destinationDir);
-            }
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            //if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
-            //{
-            // File.Copy(file, destinationFile, true);
-            using (FileStream sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-            using (FileStream destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
-            {
-                await sourceStream.CopyToAsync(destinationStream);
-            }
-            //}
-            stopwatch.Stop();
-            double transferTime = stopwatch.Elapsed.TotalMilliseconds;
-
-            _FullState = _FullState with
-            {
-                NbFilesLeftToDo = totalFiles - completedFiles,
-                Progression = (int)((completedSize * 100) / totalFilesSize),
-                SourceFilePath = file,
-                TargetFilePath = destinationFile
-            };
-        }
 
         private void OnWorkAppStopped(object? sender, EventArgs e)
         {

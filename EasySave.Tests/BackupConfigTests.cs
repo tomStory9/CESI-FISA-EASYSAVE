@@ -16,7 +16,7 @@ namespace EasySaveBusiness.Tests
 
         public BackupConfigServiceTests()
         {
-            // Nettoyer les fichiers de configuration avant chaque test
+            // Clean up configuration files before each test
             if (Directory.Exists(AppDataPath))
             {
                 Directory.Delete(AppDataPath, true);
@@ -28,45 +28,68 @@ namespace EasySaveBusiness.Tests
         [Fact]
         public void AddBackupConfig_ShouldAddConfig_WhenConfigDoesNotExist()
         {
- 
-            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
+            // Arrange
+            var config = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
+            };
 
+            // Act
+            _service.AddBackupConfig(config);
 
-            _service.AddBackupConfig(1, config);
-
-
-            Assert.True(_service.BackupConfigs.ContainsKey(1));
-            Assert.Equal(config.Name, _service.BackupConfigs[1].Name);
+            // Assert
+            Assert.Contains(config, _service.BackupConfigs);
+            Assert.Equal(config.Name, _service.BackupConfigs.First(c => c.Id == 1).Name);
         }
 
         [Fact]
         public void AddBackupConfig_ShouldThrowException_WhenConfigAlreadyExists()
         {
+            // Arrange
+            var config = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
+            };
+            _service.AddBackupConfig(config);
 
-            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
-            _service.AddBackupConfig(1, config);
-
-
-            var exception = Assert.Throws<InvalidOperationException>(() => _service.AddBackupConfig(1, config));
+            // Act & Assert
+            var exception = Assert.Throws<InvalidOperationException>(() => _service.AddBackupConfig(config));
             Assert.Equal($"Backup job with ID 1 already exists.", exception.Message);
         }
 
         [Fact]
         public void RemoveBackupConfig_ShouldRemoveConfig_WhenConfigExists()
         {
+            // Arrange
+            var config = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
+            };
+            _service.AddBackupConfig(config);
 
-            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
-            _service.AddBackupConfig(1, config);
-
-
+            // Act
             _service.RemoveBackupConfig(1);
 
-            Assert.False(_service.BackupConfigs.ContainsKey(1));
+            // Assert
+            Assert.DoesNotContain(config, _service.BackupConfigs);
         }
 
         [Fact]
         public void RemoveBackupConfig_ShouldThrowException_WhenConfigDoesNotExist()
         {
+            // Act & Assert
             var exception = Assert.Throws<KeyNotFoundException>(() => _service.RemoveBackupConfig(1));
             Assert.Equal($"Backup job with ID 1 not found.", exception.Message);
         }
@@ -74,15 +97,23 @@ namespace EasySaveBusiness.Tests
         [Fact]
         public void Save_ShouldCreateConfigFile_WhenConfigIsAdded()
         {
+            // Arrange
+            var config = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
+            };
+            _service.AddBackupConfig(config);
 
-            var config = new BackupConfig("Backup1", "C:/Source", "D:/Target", BackupType.Full);
-            _service.AddBackupConfig(1, config);
-
+            // Assert
             Assert.True(File.Exists(ConfigPath));
             var json = File.ReadAllText(ConfigPath);
             var configs = JsonSerializer.Deserialize<EasySaveConfig>(json);
-            Assert.True(configs.BackupConfigs.ContainsKey(1));
-            Assert.Equal(config.Name, configs.BackupConfigs[1].Name);
+            Assert.Contains(config, configs.BackupConfigs);
+            Assert.Equal(config.Name, configs.BackupConfigs.First(c => c.Id == 1).Name);
         }
     }
 }

@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace EasySaveBusiness.Services
 {
-    public class NetworkUsageChecker
+    public class IsNetworkUsageExceeded
     {
-
+        public static bool IsBigFileProcessing = false;
         public bool IsNetworkUsageLimitExceeded(string networkInterfaceName, long networkUsageLimit)
         {
             NetworkInterface[] networkInterfaces = NetworkInterface.GetAllNetworkInterfaces();

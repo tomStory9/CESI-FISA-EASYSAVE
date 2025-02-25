@@ -17,19 +17,25 @@ namespace EasySaveBusiness.Tests
         {
             // Arrange
             var logger = new BackupFullStateLogger(_logFilePath);
-            var states = new List<BackupJobFullState>
+            var backupConfig = new BackupConfig
             {
-                new BackupJobFullState(
-                    name: "Backup1",
-                    sourceFilePath: "C:/Source",
-                    targetFilePath: "D:/Target",
-                    state: BackupJobState.ACTIVE,
-                    totalFilesToCopy: 100,
-                    totalFilesSize: 1024,
-                    nbFilesLeftToDo: 50,
-                    progression: 50
-                )
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
             };
+            var state = BackupJobFullState.FromBackupConfig(backupConfig) with
+            {
+                SourceFilePath = "C:/Source/file.txt",
+                TargetFilePath = "D:/Target/file.txt",
+                State = BackupJobState.ACTIVE,
+                TotalFilesToCopy = 100,
+                TotalFilesSize = 1024,
+                NbFilesLeftToDo = 50,
+                Progression = 50
+            };
+            var states = new List<BackupJobFullState> { state };
 
             // Act
             logger.LogBackupFullState(states);
@@ -40,13 +46,13 @@ namespace EasySaveBusiness.Tests
             var deserializedStates = JsonSerializer.Deserialize<List<BackupJobFullState>>(jsonContent);
             Assert.NotNull(deserializedStates);
             Assert.Single(deserializedStates);
-            Assert.Equal(states[0].Name, deserializedStates[0].Name);
-            Assert.Equal(states[0].SourceFilePath, deserializedStates[0].SourceFilePath);
-            Assert.Equal(states[0].State, deserializedStates[0].State);
-            Assert.Equal(states[0].TotalFilesToCopy, deserializedStates[0].TotalFilesToCopy);
-            Assert.Equal(states[0].TotalFilesSize, deserializedStates[0].TotalFilesSize);
-            Assert.Equal(states[0].NbFilesLeftToDo, deserializedStates[0].NbFilesLeftToDo);
-            Assert.Equal(states[0].Progression, deserializedStates[0].Progression);
+            Assert.Equal(state.Name, deserializedStates[0].Name);
+            Assert.Equal(state.SourceFilePath, deserializedStates[0].SourceFilePath);
+            Assert.Equal(state.State, deserializedStates[0].State);
+            Assert.Equal(state.TotalFilesToCopy, deserializedStates[0].TotalFilesToCopy);
+            Assert.Equal(state.TotalFilesSize, deserializedStates[0].TotalFilesSize);
+            Assert.Equal(state.NbFilesLeftToDo, deserializedStates[0].NbFilesLeftToDo);
+            Assert.Equal(state.Progression, deserializedStates[0].Progression);
         }
 
         [Fact]
@@ -54,34 +60,46 @@ namespace EasySaveBusiness.Tests
         {
             // Arrange
             var logger = new BackupFullStateLogger(_logFilePath);
-            var initialStates = new List<BackupJobFullState>
+            var initialBackupConfig = new BackupConfig
             {
-                new BackupJobFullState(
-                    name: "Backup1",
-                    sourceFilePath: "C:/Source",
-                    targetFilePath: "D:/Target",
-                    state: BackupJobState.ACTIVE,
-                    totalFilesToCopy: 100,
-                    totalFilesSize: 1024,
-                    nbFilesLeftToDo: 50,
-                    progression: 50
-                )
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = "C:/Source",
+                TargetDirectory = "D:/Target",
+                Type = BackupType.Full
             };
+            var initialState = BackupJobFullState.FromBackupConfig(initialBackupConfig) with
+            {
+                SourceFilePath = "C:/Source/file.txt",
+                TargetFilePath = "D:/Target/file.txt",
+                State = BackupJobState.ACTIVE,
+                TotalFilesToCopy = 100,
+                TotalFilesSize = 1024,
+                NbFilesLeftToDo = 50,
+                Progression = 50
+            };
+            var initialStates = new List<BackupJobFullState> { initialState };
             logger.LogBackupFullState(initialStates);
 
-            var newStates = new List<BackupJobFullState>
+            var newBackupConfig = new BackupConfig
             {
-                new BackupJobFullState(
-                    name: "Backup2",
-                    sourceFilePath: "C:/Source2",
-                    targetFilePath: "D:/Target2",
-                    state: BackupJobState.END,
-                    totalFilesToCopy: 200,
-                    totalFilesSize: 2048,
-                    nbFilesLeftToDo: 0,
-                    progression: 100
-                )
+                Id = 2,
+                Name = "Backup2",
+                SourceDirectory = "C:/Source2",
+                TargetDirectory = "D:/Target2",
+                Type = BackupType.Full
             };
+            var newState = BackupJobFullState.FromBackupConfig(newBackupConfig) with
+            {
+                SourceFilePath = "C:/Source2/file.txt",
+                TargetFilePath = "D:/Target2/file.txt",
+                State = BackupJobState.STOPPED,
+                TotalFilesToCopy = 200,
+                TotalFilesSize = 2048,
+                NbFilesLeftToDo = 0,
+                Progression = 100
+            };
+            var newStates = new List<BackupJobFullState> { newState };
 
             // Act
             logger.LogBackupFullState(newStates);
@@ -91,13 +109,13 @@ namespace EasySaveBusiness.Tests
             var deserializedStates = JsonSerializer.Deserialize<List<BackupJobFullState>>(jsonContent);
             Assert.NotNull(deserializedStates);
             Assert.Single(deserializedStates);
-            Assert.Equal(newStates[0].Name, deserializedStates[0].Name);
-            Assert.Equal(newStates[0].SourceFilePath, deserializedStates[0].SourceFilePath);
-            Assert.Equal(newStates[0].State, deserializedStates[0].State);
-            Assert.Equal(newStates[0].TotalFilesToCopy, deserializedStates[0].TotalFilesToCopy);
-            Assert.Equal(newStates[0].TotalFilesSize, deserializedStates[0].TotalFilesSize);
-            Assert.Equal(newStates[0].NbFilesLeftToDo, deserializedStates[0].NbFilesLeftToDo);
-            Assert.Equal(newStates[0].Progression, deserializedStates[0].Progression);
+            Assert.Equal(newState.Name, deserializedStates[0].Name);
+            Assert.Equal(newState.SourceFilePath, deserializedStates[0].SourceFilePath);
+            Assert.Equal(newState.State, deserializedStates[0].State);
+            Assert.Equal(newState.TotalFilesToCopy, deserializedStates[0].TotalFilesToCopy);
+            Assert.Equal(newState.TotalFilesSize, deserializedStates[0].TotalFilesSize);
+            Assert.Equal(newState.NbFilesLeftToDo, deserializedStates[0].NbFilesLeftToDo);
+            Assert.Equal(newState.Progression, deserializedStates[0].Progression);
         }
 
         [Fact]

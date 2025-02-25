@@ -10,9 +10,13 @@ namespace EasySaveBusiness.Services
         {
             using (var hashAlgorithm = SHA256.Create())
             {
+                if (config.Type == BackupType.Full || !File.Exists(file2))
+                {
+                    return true;
+                }
                 byte[] hash1 = hashAlgorithm.ComputeHash(File.ReadAllBytes(file1));
                 byte[] hash2 = hashAlgorithm.ComputeHash(File.ReadAllBytes(file2));
-                return config.Type == BackupType.Full || !File.Exists(file2) || StructuralComparisons.StructuralEqualityComparer.Equals(hash1, hash2);
+                return StructuralComparisons.StructuralEqualityComparer.Equals(hash1, hash2);
             }
         }
     }
