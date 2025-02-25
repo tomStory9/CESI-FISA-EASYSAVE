@@ -11,9 +11,11 @@ namespace EasySaveBusiness.Services
 
         private readonly string _workAppName;
         private CancellationTokenSource? _cancellationTokenSource;
+        private readonly IsRunningWorkAppService _isRunningWorkAppService;
 
         public WorkAppMonitorService(string workAppName)
         {
+            _isRunningWorkAppService = new IsRunningWorkAppService();
             _workAppName = workAppName;
         }
 
@@ -32,7 +34,7 @@ namespace EasySaveBusiness.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (Process.GetProcessesByName(_workAppName).Length == 0)
+                if (!_isRunningWorkAppService.IsRunning(_workAppName))
                 {
                     WorkAppStopped?.Invoke(this, EventArgs.Empty);
                 }

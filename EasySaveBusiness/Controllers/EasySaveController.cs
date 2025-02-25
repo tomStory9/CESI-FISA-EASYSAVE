@@ -13,18 +13,25 @@ namespace EasySaveBusiness.Controllers
         private readonly BackupJobsService _backupJobsService;
         private readonly LoggerService _loggerService;
         private readonly BackupFullStateLogger _backupFullStateLogger;
+        private readonly NetworkUsageMonitorService _networkUsageMonitorService;
+        private readonly WorkAppMonitorService _workAppMonitorService;
 
         public EasySaveController(
             EasySaveConfigService backupConfigService,
             BackupJobsService backupJobsService,
             LoggerService loggerService,
-            BackupFullStateLogger backupFullStateLogger
+            BackupFullStateLogger backupFullStateLogger,
+            NetworkUsageMonitorService networkUsageMonitorService,
+            WorkAppMonitorService workAppMonitorService
+
         )
         {
             _backupConfigService = backupConfigService;
             _backupJobsService = backupJobsService;
             _loggerService = loggerService;
             _backupFullStateLogger = backupFullStateLogger;
+            _networkUsageMonitorService = networkUsageMonitorService;
+            _workAppMonitorService = workAppMonitorService;
         }
 
         public void Init()
@@ -33,6 +40,8 @@ namespace EasySaveBusiness.Controllers
             _backupJobsService.BackupJobFullStatesChanged += OnBackupJobFullStateChanged;
             View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
             View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
+            _workAppMonitorService.StartMonitoring();
+            _networkUsageMonitorService.StartMonitoring();
         }
 
         public void AddBackupConfig(BackupConfig config)

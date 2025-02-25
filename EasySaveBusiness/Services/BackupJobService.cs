@@ -172,11 +172,17 @@ namespace EasySaveBusiness.Services
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
 
-
+        private void isNetworkUsageNoMoreExceeded(object? sender, EventArgs e)
+        {
+            if (FullState.State == BackupJobState.PAUSED)
+            {
+                Start();
+            }
+        }
 
         private void OnWorkAppStopped(object? sender, EventArgs e)
         {
-            if (FullState.State == BackupJobState.STOPPED)
+            if (FullState.State == BackupJobState.PAUSED)
             {
                 Start();
             }
