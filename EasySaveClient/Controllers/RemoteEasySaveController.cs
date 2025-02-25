@@ -14,11 +14,19 @@ namespace EasySaveClient.Controllers
     {
         public IView View { get; set; }
         private SocketClient _socketClient;
+        private string _host;
+        private int _port;
+
+        public RemoteEasySaveController(string host, int port)
+        {
+            _host = host;
+            _port = port;
+        }
 
         public void Init()
         {
             _socketClient = new SocketClient(View);
-            _socketClient.ConnectAsync().Wait();
+            _socketClient.ConnectAsync(_host, _port).Wait();
             _socketClient.SendCommandAsync("Init", null).Wait();
         }
 

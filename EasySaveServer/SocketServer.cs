@@ -23,7 +23,7 @@ public class SocketServer : BackgroundService
         _controller = controller;
         _controller.View = new RemoteView(this);
 
-        _listener = new TcpListener(IPAddress.Any, 5000);
+        _listener = new TcpListener(IPAddress.Any, 4201);
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
@@ -104,6 +104,13 @@ public class SocketServer : BackgroundService
                     if (config != null)
                     {
                         _controller.AddBackupConfig(config);
+                    }
+                    break;
+                case "EditBackupConfig":
+                    var editConfig = JsonSerializer.Deserialize<BackupConfig>(request["Payload"]?.ToString() ?? string.Empty);
+                    if (editConfig != null)
+                    {
+                        _controller.EditBackupConfig(editConfig);
                     }
                     break;
                 default:

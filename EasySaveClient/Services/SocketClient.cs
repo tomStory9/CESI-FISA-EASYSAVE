@@ -22,9 +22,9 @@ namespace EasySaveClient.Services
             _view = view;
         }
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(string host, int port)
         {
-            await _client.ConnectAsync("127.0.0.1", 5000);
+            await _client.ConnectAsync(host, port);
             Console.WriteLine("Connected to server");
             _stream = _client.GetStream();
             _ = ListenForServerMessages();
