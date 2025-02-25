@@ -15,11 +15,12 @@ namespace EasySaveBusiness.Services
         private readonly IsNetworkUsageExceeded _isNetworkUsageExceeded = new IsNetworkUsageExceeded();
         private readonly string _interfaceName;
         private CancellationTokenSource? _cancellationTokenSource;
-
-        public NetworkUsageMonitorService(int limit , string InterfaceName )
+        private ManualResetEvent Systemmre { get; }
+        public NetworkUsageMonitorService(int limit , string InterfaceName ,ManualResetEvent systemmre)
         {
             _interfaceName = InterfaceName;
             _limit = limit;
+            Systemmre = systemmre;
         }
 
         public void StartMonitoring()
@@ -37,9 +38,9 @@ namespace EasySaveBusiness.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (_isNetworkUsageExceeded.IsNetworkUsageLimitExceeded(_interfaceName,_limit))
+                if (!_isNetworkUsageExceeded.IsNetworkUsageLimitExceeded(_interfaceName,_limit))
                 {
-                    NetWorkUsageExceed?.Invoke(this, EventArgs.Empty);
+                  Systemmre.Set();
                 }
 
                 await Task.Delay(1000, cancellationToken); // Check every second
