@@ -11,10 +11,13 @@ namespace EasySaveBusiness.Services
 
         private readonly string _workAppName;
         private CancellationTokenSource? _cancellationTokenSource;
-
-        public WorkAppMonitorService(string workAppName)
+        private readonly IsRunningWorkAppService _isRunningWorkAppService;
+        private ManualResetEvent Systemmre { get; }
+        public WorkAppMonitorService(string workAppName, ManualResetEvent systemmre)
         {
+            _isRunningWorkAppService = new IsRunningWorkAppService();
             _workAppName = workAppName;
+            Systemmre = systemmre;
         }
 
         public void StartMonitoring()
@@ -32,9 +35,9 @@ namespace EasySaveBusiness.Services
         {
             while (!cancellationToken.IsCancellationRequested)
             {
-                if (Process.GetProcessesByName(_workAppName).Length == 0)
+                if (!_isRunningWorkAppService.IsRunning(_workAppName))
                 {
-                    WorkAppStopped?.Invoke(this, EventArgs.Empty);
+                    Systemmre.Set();
                 }
 
                 await Task.Delay(1000, cancellationToken); // Check every second
