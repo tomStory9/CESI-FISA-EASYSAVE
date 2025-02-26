@@ -50,25 +50,25 @@ namespace EasySaveBusiness.Controllers
                 ? _backupConfigService.BackupConfigs.Max(bc => bc.Id) + 1
                 : 1;
             _backupConfigService.AddBackupConfig(config with { Id = id });
-            await Task.CompletedTask;
+            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
         }
 
         public async Task EditBackupConfig(BackupConfig config)
         {
             _backupConfigService.EditBackupConfig(config);
-            await Task.CompletedTask;
+            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
         }
 
         public async Task OverrideBackupConfigs(List<BackupConfig> configs)
         {
             _backupConfigService.OverrideBackupConfigs(configs);
-            await Task.CompletedTask;
+            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
         }
 
         public async Task RemoveBackupConfig(int id)
         {
             _backupConfigService.RemoveBackupConfig(id);
-            await Task.CompletedTask;
+            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
         }
 
         public async Task StartBackupJob(int id)

@@ -12,16 +12,7 @@ namespace EasySaveBusiness.Services
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
         public List<BackupConfig> BackupConfigs { get; private set; } = [];
-        public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(
-            new List<BackupConfig>(),
-            "notepad.exe",
-            LoggerDLL.Models.LogType.LogTypeEnum.JSON,
-            new List<string>(),
-            0,
-            "vEthernet (Default Switch)",
-            100000,
-            "changeme"
-        );
+        public EasySaveConfig EasySaveConfig { get; private set; } = EasySaveConfig.Defaults;
 
         public EasySaveConfigService()
         {
@@ -35,21 +26,15 @@ namespace EasySaveBusiness.Services
                 if (File.Exists(ConfigPath))
                 {
                     string json = File.ReadAllText(ConfigPath);
-                    EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json) ?? EasySaveConfig;
+                    EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json, new JsonSerializerOptions
+                    {
+                        IncludeFields = true
+                    }) ?? EasySaveConfig;
                     BackupConfigs = EasySaveConfig.BackupConfigs ?? [];
                 }
                 else
                 {
-                    EasySaveConfig = new EasySaveConfig(
-                        new List<BackupConfig>(),
-                        "notepad.exe",
-                        LoggerDLL.Models.LogType.LogTypeEnum.JSON,
-                        new List<string>(),
-                        0,
-                        "vEthernet (Default Switch)",
-                        100000,
-                        "changeme"
-                    );
+                    EasySaveConfig = EasySaveConfig.Defaults;
                     BackupConfigs = new List<BackupConfig>();
                 }
             }
@@ -123,10 +108,10 @@ namespace EasySaveBusiness.Services
                 EasySaveConfig = new EasySaveConfig(
                     BackupConfigs,
                     EasySaveConfig.WorkApp,
-                    EasySaveConfig.LogType,
                     EasySaveConfig.PriorityFileExtension,
                     EasySaveConfig.NetworkKoLimit,
                     EasySaveConfig.NetworkInterfaceName,
+                    EasySaveConfig.LogType,
                     EasySaveConfig.SizeLimit,
                     EasySaveConfig.Key
                 );

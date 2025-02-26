@@ -68,6 +68,10 @@ namespace EasySaveClient.Services
                         case "DisplayError":
                             await _view.DisplayError(response["Payload"].ToString());
                             break;
+                        case "RefreshBackupConfigs":
+                            var backupConfigs = JsonSerializer.Deserialize<List<BackupConfig>>(response["Payload"].ToString());
+                            await _view.RefreshBackupConfigs(backupConfigs);
+                            break;
                     }
                 }
             }

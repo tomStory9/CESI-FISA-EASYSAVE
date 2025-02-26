@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:EasySaveDesktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="EasySaveDesktop.BackupConfigWizardWindow"
+		x:DataType="vm:BackupConfigWizardViewModel"
+        Title="BackupConfigWizardWindow">
+	<Grid>
+		<ContentControl Content="{Binding CurrentStep, Converter={StaticResource BackupConfigWizardStepToViewConverter}}" />
+		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+			<Button Content="Précédent" Command="{Binding PreviousCommand}" IsEnabled="{Binding IsPreviousEnabled}" />
+			<Button Content="Suivant" Command="{Binding NextCommand}" IsEnabled="{Binding IsNextEnabled}" />
+			<Button Content="Terminer" Command="{Binding FinishCommand}" IsEnabled="{Binding IsFinishEnabled}" />
+		</StackPanel>
+	</Grid>
+</Window>

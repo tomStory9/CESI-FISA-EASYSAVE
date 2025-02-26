@@ -73,15 +73,15 @@ namespace EasySaveDesktop.ViewModels
         [RelayCommand]
         private async Task OpenCreateBackupConfigWindow()
         {
-            var createBackupConfigViewModel = new CreateBackupConfigViewModel();
-            var createBackupConfigWindow = new CreateBackupConfigWindow
+            var createBackupConfigViewModel = new BackupConfigWizardViewModel(Controller);
+            var createBackupConfigWindow = new BackupConfigWizardWindow
             {
                 DataContext = createBackupConfigViewModel
             };
 
             if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                await createBackupConfigWindow.ShowDialog<CreateBackupConfigViewModel>(desktop.MainWindow);
+                await createBackupConfigWindow.ShowDialog<BackupConfigWizardViewModel>(desktop.MainWindow);
             }
 
             /* createBackupConfigViewModel.BackupConfigCreated += (backupConfig) =>

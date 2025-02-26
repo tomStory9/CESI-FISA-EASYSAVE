@@ -4,9 +4,9 @@ using Avalonia.Markup.Xaml;
 
 namespace EasySaveDesktop;
 
-public partial class CreateBackupConfigWindow : Window
+public partial class BackupConfigWizardStep2 : UserControl
 {
-    public CreateBackupConfigWindow()
+    public BackupConfigWizardStep2()
     {
         InitializeComponent();
     }

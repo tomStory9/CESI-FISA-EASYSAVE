@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using EasySaveBusiness.Services;
 using LoggerDLL.Models;
@@ -18,13 +19,14 @@ namespace EasySaveBusiness.Models
         public int SizeLimit { get; }
         public string Key { get; }
 
+        [JsonConstructor]
         public EasySaveConfig(
             List<BackupConfig> backupConfigs,
             string workApp,
-            LoggerDLL.Models.LogType.LogTypeEnum logType,
             List<string> priorityFileExtension,
-            int networkKoUsageLimit,
+            int networkKoLimit,
             string networkInterfaceName,
+            LoggerDLL.Models.LogType.LogTypeEnum logType,
             int sizeLimit,
             string key
         )
@@ -33,11 +35,22 @@ namespace EasySaveBusiness.Models
             WorkApp = workApp;
             LogType = logType;
             PriorityFileExtension = priorityFileExtension;
-            NetworkKoLimit = networkKoUsageLimit;
+            NetworkKoLimit = networkKoLimit;
             NetworkInterfaceName = networkInterfaceName;
             SizeLimit = sizeLimit;
             Key = key;
         }
+
+        public static EasySaveConfig Defaults => new EasySaveConfig(
+            new List<BackupConfig>(),
+            "notepad.exe",
+            new List<string> { ".txt" },
+            1000,
+            "Ethernet",
+            LoggerDLL.Models.LogType.LogTypeEnum.JSON,
+            1000,
+            "password"
+        );
     }
 
 }

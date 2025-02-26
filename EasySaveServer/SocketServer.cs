@@ -114,6 +114,19 @@ public class SocketServer : BackgroundService
                         _controller.EditBackupConfig(editConfig);
                     }
                     break;
+                case "RemoveBackupConfig":
+                    if (int.TryParse(request["Payload"]?.ToString(), out int removeId))
+                    {
+                        _controller.RemoveBackupConfig(removeId);
+                    }
+                    break;
+                case "OverrideBackupConfigs":
+                    var configs = JsonSerializer.Deserialize<List<BackupConfig>>(request["Payload"]?.ToString() ?? string.Empty);
+                    if (configs != null)
+                    {
+                        _controller.OverrideBackupConfigs(configs);
+                    }
+                    break;
                 default:
                     SendErrorMessage(client, $"Unknown command '{command}'");
                     break;
@@ -125,6 +138,7 @@ public class SocketServer : BackgroundService
             SendErrorMessage(client, $"Error processing command '{command}'");
         }
     }
+
 
     public void BroadcastEvent(string eventType, object payload)
     {

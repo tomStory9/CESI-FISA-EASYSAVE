@@ -102,7 +102,8 @@ namespace EasySaveDesktop.ViewModels
                 Name = Name,
                 SourceDirectory = SourceDirectory,
                 TargetDirectory = TargetDirectory,
-                Type = Type
+                Type = Type,
+                Encrypted = false,
             });
         }
 
