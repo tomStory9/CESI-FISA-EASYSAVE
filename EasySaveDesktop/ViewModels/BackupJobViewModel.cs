@@ -55,6 +55,10 @@ namespace EasySaveDesktop.ViewModels
 
         private bool IsReadOnly => State != BackupJobState.STOPPED;
 
+        public bool IsStartEnabled => State == BackupJobState.STOPPED || State == BackupJobState.PAUSED;
+        public bool IsPauseEnabled => State == BackupJobState.ACTIVE;
+        public bool IsRemoveEnabled => State == BackupJobState.STOPPED;
+
         public BackupJobViewModel(IEasySaveController controller, BackupJobFullState backupJobFullState)
         {
             _controller = controller;
@@ -108,9 +112,36 @@ namespace EasySaveDesktop.ViewModels
         }
 
         [RelayCommand]
-        private void Start()
+        private async Task Start()
         {
-            Console.WriteLine("BackupJobViewModel.Start");
+            await _controller.StartBackupJob(Id);
+            OnPropertyChanged(nameof(IsStartEnabled));
+            OnPropertyChanged(nameof(IsPauseEnabled));
+            OnPropertyChanged(nameof(IsRemoveEnabled));
+        }
+
+        [RelayCommand]
+        private async Task Pause()
+        {
+            await _controller.PauseBackupJob(Id);
+            OnPropertyChanged(nameof(IsStartEnabled));
+            OnPropertyChanged(nameof(IsPauseEnabled));
+            OnPropertyChanged(nameof(IsRemoveEnabled));
+        }
+
+        [RelayCommand]
+        private async Task Stop()
+        {
+            await _controller.StopBackupJob(Id);
+            OnPropertyChanged(nameof(IsStartEnabled));
+            OnPropertyChanged(nameof(IsPauseEnabled));
+            OnPropertyChanged(nameof(IsRemoveEnabled));
+        }
+
+        [RelayCommand]
+        private async Task Remove()
+        {
+            await _controller.RemoveBackupConfig(Id);
         }
     }
 }

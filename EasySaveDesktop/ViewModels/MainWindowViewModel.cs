@@ -23,9 +23,6 @@ namespace EasySaveDesktop.ViewModels
         public string Greeting { get; } = "Welcome to Avalonia!";
 
         [ObservableProperty]
-        private List<BackupConfig> backupConfigs = [];
-
-        [ObservableProperty]
         private ObservableCollection<BackupJobViewModel> backupJobs = [];
 
         public bool ShowMassActionButtons => BackupJobs.Any(job => job.IsChecked);
@@ -102,12 +99,6 @@ namespace EasySaveDesktop.ViewModels
         {
             await Task.CompletedTask;
             throw new System.NotImplementedException();
-        }
-
-        public async Task RefreshBackupConfigs(List<BackupConfig> backupConfigs)
-        {
-            BackupConfigs = backupConfigs;
-            await Task.CompletedTask;
         }
 
         public async Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
