@@ -54,7 +54,7 @@
 						<DataGridTemplateColumn Header="">
 							<DataGridTemplateColumn.CellTemplate>
 								<DataTemplate>
-									<Button Content="Start" Command="{Binding StartCommand}" CommandParameter="{Binding}"/>
+									<Button Content="{materialIcons:MaterialIconExt Kind=PlayArrow}" Command="{Binding StartCommand}" CommandParameter="{Binding}"/>
 								</DataTemplate>
 							</DataGridTemplateColumn.CellTemplate>
 						</DataGridTemplateColumn>

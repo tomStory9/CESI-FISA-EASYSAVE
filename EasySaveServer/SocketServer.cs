@@ -17,6 +17,7 @@ public class SocketServer : BackgroundService
     private readonly IEasySaveController _controller;
     private TcpListener _listener;
     private List<TcpClient> _clients = new();
+    private readonly TimeSpan _clientCheckInterval = TimeSpan.FromSeconds(10);
 
     public SocketServer(IEasySaveController controller)
     {
@@ -24,13 +25,14 @@ public class SocketServer : BackgroundService
         _controller.View = new RemoteView(this);
 
         _listener = new TcpListener(IPAddress.Any, 4201);
-
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         _listener.Start();
         Console.WriteLine("Serveur en attente de connexions...");
+
+        _ = CheckClientsAsync(cancellationToken);
 
         while (!cancellationToken.IsCancellationRequested)
         {
@@ -60,6 +62,25 @@ public class SocketServer : BackgroundService
 
         _clients.Remove(client);
         client.Close();
+    }
+
+    private async Task CheckClientsAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            await Task.Delay(_clientCheckInterval, cancellationToken);
+
+            for (int i = _clients.Count - 1; i >= 0; i--)
+            {
+                var client = _clients[i];
+                if (!client.Connected)
+                {
+                    Console.WriteLine("Removing disconnected client");
+                    _clients.RemoveAt(i);
+                    client.Close();
+                }
+            }
+        }
     }
 
     private void HandleClientRequest(string message, TcpClient client)
@@ -139,11 +160,11 @@ public class SocketServer : BackgroundService
         }
     }
 
-
     public void BroadcastEvent(string eventType, object payload)
     {
         Console.WriteLine($"Broadcasting event: {eventType}");
-        object message = new {
+        object message = new
+        {
             Event = eventType,
             Payload = payload
         };
@@ -153,7 +174,10 @@ public class SocketServer : BackgroundService
 
         foreach (var client in _clients)
         {
-            client.GetStream().Write(data);
+            if (client.Connected)
+            {
+                client.GetStream().Write(data);
+            }
         }
         Console.WriteLine("stop");
     }
