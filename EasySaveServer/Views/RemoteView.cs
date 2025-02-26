@@ -25,12 +25,6 @@ namespace EasySaveServer.Views
             await Task.CompletedTask;
         }
 
-        public async Task RefreshBackupConfigs(List<BackupConfig> backupConfigs)
-        {
-            _server.BroadcastEvent("RefreshBackupConfigs", backupConfigs);
-            await Task.CompletedTask;
-        }
-
         public async Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
         {
             _server.BroadcastEvent("RefreshBackupJobFullStates", backupJobFullState);

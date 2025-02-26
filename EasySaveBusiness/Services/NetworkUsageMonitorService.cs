@@ -12,7 +12,7 @@ namespace EasySaveBusiness.Services
         public event EventHandler? NetWorkUsageExceed;
 
         private readonly int _limit;
-        private readonly IsNetworkUsageExceeded _isNetworkUsageExceeded = new IsNetworkUsageExceeded();
+        private readonly IsNetworkUsageExceededService _isNetworkUsageExceeded = new IsNetworkUsageExceededService();
         private readonly string _interfaceName;
         private CancellationTokenSource? _cancellationTokenSource;
         private ManualResetEvent Systemmre { get; }

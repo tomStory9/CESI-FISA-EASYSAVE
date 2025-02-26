@@ -25,11 +25,17 @@ namespace EasySaveServer.Extensions
             services.AddSingleton<EasySaveConfigService>();
             services.AddSingleton(provider => new LoggerService(logPath, LoggerDLL.Models.LogType.LogTypeEnum.JSON));
             services.AddSingleton<DifferentialBackupVerifierService>();
+            services.AddSingleton<SortBackupFileService>();
+            services.AddSingleton<IsRunningWorkAppService>();
+            services.AddSingleton<IsNetworkUsageExceededService>();
             services.AddTransient(provider => new BackupJobService(
                 provider.GetRequiredService<LoggerService>(),
                 provider.GetRequiredService<EasySaveConfigService>(),
                 provider.GetRequiredService<FileProcessingService>(),
                 provider.GetRequiredService<WorkAppMonitorService>(),
+                provider.GetRequiredService<SortBackupFileService>(),
+                provider.GetRequiredService<IsRunningWorkAppService>(),
+                provider.GetRequiredService<IsNetworkUsageExceededService>(),
                 Systemmre
             ));
             services.AddSingleton(provider => new FileProcessingService(

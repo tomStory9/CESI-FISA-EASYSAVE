@@ -38,7 +38,6 @@ namespace EasySaveBusiness.Controllers
         {
             // View.Init();
             _backupJobsService.BackupJobFullStatesChanged += OnBackupJobFullStateChanged;
-            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
             await View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
             _workAppMonitorService.StartMonitoring();
             _networkUsageMonitorService.StartMonitoring();
@@ -50,25 +49,32 @@ namespace EasySaveBusiness.Controllers
                 ? _backupConfigService.BackupConfigs.Max(bc => bc.Id) + 1
                 : 1;
             _backupConfigService.AddBackupConfig(config with { Id = id });
-            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
+            await RefreshBackupJobs();
         }
 
         public async Task EditBackupConfig(BackupConfig config)
         {
             _backupConfigService.EditBackupConfig(config);
-            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
+            await RefreshBackupJobs();
+        }
+
+        public async Task OverrideEasySaveConfig(EasySaveConfig config)
+        {
+            _backupConfigService.OverrideEasySaveConfig(config);
+            await RefreshBackupJobs();
         }
 
         public async Task OverrideBackupConfigs(List<BackupConfig> configs)
         {
             _backupConfigService.OverrideBackupConfigs(configs);
-            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
+            await RefreshBackupJobs();
         }
 
         public async Task RemoveBackupConfig(int id)
         {
             _backupConfigService.RemoveBackupConfig(id);
-            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
+            Console.WriteLine(_backupConfigService.BackupConfigs);
+            await RefreshBackupJobs();
         }
 
         public async Task StartBackupJob(int id)
@@ -76,10 +82,26 @@ namespace EasySaveBusiness.Controllers
             _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Start();
             await Task.CompletedTask;
         }
+        public async Task PauseBackupJob(int id)
+        {
+            _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Pause();
+            await Task.CompletedTask;
+        }
+
+        public async Task StopBackupJob(int id)
+        {
+            _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Stop();
+            await Task.CompletedTask;
+        }
 
         public void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)
         {
             View.RefreshBackupJobFullStates(backupJobFullStates);
+        }
+
+        private async Task RefreshBackupJobs()
+        {
+            await View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
         }
     }
 }

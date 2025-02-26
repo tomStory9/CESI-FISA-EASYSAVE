@@ -14,8 +14,7 @@ namespace EasySaveBusiness.Views
         public IEasySaveController Controller { protected get; set; }
 
         public Task Init();
-        public Task RefreshBackupConfigs(List<BackupConfig> backupConfigs);
-        public Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState);
+        public Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig);
         public Task DisplayMessage(string message);
         public Task DisplayError(string errorMessage);
     }

@@ -14,6 +14,10 @@ namespace EasySaveBusiness.Services
         public List<BackupConfig> BackupConfigs { get; private set; } = [];
         public EasySaveConfig EasySaveConfig { get; private set; } = EasySaveConfig.Defaults;
 
+        public event EventHandler<BackupConfig>? BackupConfigAdded;
+        public event EventHandler<int>? BackupConfigRemoved;
+        public event EventHandler<BackupConfig>? BackupConfigEdited;
+
         public EasySaveConfigService()
         {
             Init();
@@ -43,9 +47,10 @@ namespace EasySaveBusiness.Services
                 throw new InvalidOperationException("Failed to initialize easySave configurations.", ex);
             }
         }
+
         public void AddBackupConfig(BackupConfig config)
-        {   
-            if(BackupConfigs.Count()==5)
+        {
+            if (BackupConfigs.Count() == 5)
             {
                 throw new InvalidOperationException("You can't add more than 5 backup configs.");
             }
@@ -60,6 +65,7 @@ namespace EasySaveBusiness.Services
             }
 
             BackupConfigs.Add(config);
+            BackupConfigAdded?.Invoke(this, config);
             Save();
         }
 
@@ -76,6 +82,7 @@ namespace EasySaveBusiness.Services
             }
             BackupConfigs.Remove(existingConfig);
             BackupConfigs.Add(config);
+            BackupConfigEdited?.Invoke(this, config);
             Save();
         }
 
@@ -87,13 +94,20 @@ namespace EasySaveBusiness.Services
 
         public void RemoveBackupConfig(int id)
         {
-            var config = BackupConfigs.FirstOrDefault(bc => bc.Id == id);
+            var config = BackupConfigs.First(bc => bc.Id == id);
             if (config == null)
             {
                 throw new KeyNotFoundException($"Backup job with ID {id} not found.");
             }
 
             BackupConfigs.Remove(config);
+            BackupConfigRemoved?.Invoke(this, id);
+            Save();
+        }
+
+        public void OverrideEasySaveConfig(EasySaveConfig config)
+        {
+            EasySaveConfig = config;
             Save();
         }
 

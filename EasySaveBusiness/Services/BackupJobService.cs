@@ -18,7 +18,7 @@ namespace EasySaveBusiness.Services
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
         private WorkAppMonitorService WorkAppMonitorService { get; }
-        private IsNetworkUsageExceeded _isNetworkUsageExceed { get; }
+        private IsNetworkUsageExceededService _isNetworkUsageExceedService { get; }
         private IsRunningWorkAppService _isRunningWorkAppService { get; }
         private SortBackupFileService SortBackupFileService { get; }
         private BackupJobFullState _FullState;
@@ -40,6 +40,9 @@ namespace EasySaveBusiness.Services
             EasySaveConfigService easySaveConfigService,
             FileProcessingService fileProcessingService,
             WorkAppMonitorService workAppMonitorService,
+            SortBackupFileService sortBackupFileService,
+            IsRunningWorkAppService isRunningWorkAppService,
+            IsNetworkUsageExceededService isNetworkUsageExceedService,
             ManualResetEvent systemmre
         )
         {
@@ -47,6 +50,9 @@ namespace EasySaveBusiness.Services
             EasySaveConfig = easySaveConfigService.EasySaveConfig;
             FileProcessingService = fileProcessingService;
             WorkAppMonitorService = workAppMonitorService;
+            SortBackupFileService = sortBackupFileService;
+            _isRunningWorkAppService = isRunningWorkAppService;
+            _isNetworkUsageExceedService = isNetworkUsageExceedService;
             Systemmre = systemmre;
 
             FileProcessingService.FileProcessed += OnFileProcessed;
@@ -141,7 +147,11 @@ namespace EasySaveBusiness.Services
 
             while (i < files.Length)
             {
-                if (_isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp) || _isNetworkUsageExceed.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit))
+                if (
+                    false
+                    // _isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp)
+                    // || _isNetworkUsageExceedService.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit)
+                )
                 {
                     SystemPause();
                     Systemmre.WaitOne();
@@ -180,7 +190,7 @@ namespace EasySaveBusiness.Services
 
                 lock (lockObject)
                 {
-                    if (IsNetworkUsageExceeded.IsBigFileProcessing)
+                    if (IsNetworkUsageExceededService.IsBigFileProcessing)
                     {
                         if (file.Length >= EasySaveConfig.SizeLimit)
                         {
@@ -201,7 +211,7 @@ namespace EasySaveBusiness.Services
 
                     if (file.Length >= EasySaveConfig.SizeLimit)
                     {
-                        IsNetworkUsageExceeded.IsBigFileProcessing = true;
+                        IsNetworkUsageExceededService.IsBigFileProcessing = true;
                     }
                 }
                 if (BackupConfig.Encrypted)

@@ -55,6 +55,16 @@ namespace EasySaveClient.Controllers
             await _socketClient.SendCommandAsync("StartBackupJob", id);
         }
 
+        public async Task PauseBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("PauseBackupJob", id);
+        }
+
+        public async Task StopBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("StopBackupJob", id);
+        }
+
         public void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)
         {
             View.RefreshBackupJobFullStates(backupJobFullStates);

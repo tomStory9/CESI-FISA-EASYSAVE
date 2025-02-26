@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EasySaveBusiness.Services
 {
-    class IsRunningWorkAppService
+    public class IsRunningWorkAppService
     {
         public bool IsRunning(string processName)
         {

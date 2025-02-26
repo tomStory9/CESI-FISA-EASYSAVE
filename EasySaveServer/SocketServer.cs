@@ -179,7 +179,6 @@ public class SocketServer : BackgroundService
                 client.GetStream().Write(data);
             }
         }
-        Console.WriteLine("stop");
     }
 
     private void SendErrorMessage(TcpClient client, string errorMessage)

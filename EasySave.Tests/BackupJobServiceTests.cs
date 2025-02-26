@@ -19,7 +19,7 @@ namespace EasySaveBusiness.Tests
         private readonly BackupJobService _backupJobService;
         private readonly FileProcessingService _fileProcessingService;
         private readonly WorkAppMonitorService _workAppMonitorService;
-        private readonly IsNetworkUsageExceeded _isNetworkUsageExceeded;
+        private readonly IsNetworkUsageExceededService _isNetworkUsageExceeded;
         private readonly SortBackupFileService _sortBackupFileService;
         private readonly string _logFilePath = Path.Combine(Path.GetTempPath(), "backup_full_state_log.json");
         private readonly string _workApp = "notepad.exe";
@@ -34,7 +34,7 @@ namespace EasySaveBusiness.Tests
             _loggerService = new LoggerService(_logFilePath, LoggerDLL.Models.LogType.LogTypeEnum.JSON);
             _differentialBackupVerifierService = new DifferentialBackupVerifierService();
             _workAppMonitorService = new WorkAppMonitorService(_workApp);
-            _isNetworkUsageExceeded = new IsNetworkUsageExceeded();
+            _isNetworkUsageExceeded = new IsNetworkUsageExceededService();
             _sortBackupFileService = new SortBackupFileService();
             var backupConfig = new BackupConfig
             {

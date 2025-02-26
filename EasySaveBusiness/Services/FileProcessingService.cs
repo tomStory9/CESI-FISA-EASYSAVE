@@ -64,10 +64,10 @@ public class FileProcessingService
 
         lock (lockObject)
         {
-            if (IsNetworkUsageExceeded.IsBigFileProcessing)
+            if (IsNetworkUsageExceededService.IsBigFileProcessing)
             {
                 lockEvent.Set();
-                IsNetworkUsageExceeded.IsBigFileProcessing = false;
+                IsNetworkUsageExceededService.IsBigFileProcessing = false;
             }
         }
 
@@ -107,10 +107,10 @@ public class FileProcessingService
 
         lock (lockObject)
         {
-            if (IsNetworkUsageExceeded.IsBigFileProcessing)
+            if (IsNetworkUsageExceededService.IsBigFileProcessing)
             {
                 lockEvent.Set();
-                IsNetworkUsageExceeded.IsBigFileProcessing = false;
+                IsNetworkUsageExceededService.IsBigFileProcessing = false;
             }
         }
 
