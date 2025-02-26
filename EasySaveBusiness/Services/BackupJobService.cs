@@ -35,7 +35,7 @@ namespace EasySaveBusiness.Services
 
         private CancellationTokenSource? _cancellationTokenSource;
 
-        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig, FileProcessingService fileProcessingService, WorkAppMonitorService workAppMonitorService, ManualResetEvent systemmre, ManualResetEvent usermre)
+        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig, FileProcessingService fileProcessingService, WorkAppMonitorService workAppMonitorService, ManualResetEvent systemmre)
         {
             LoggerService = loggerService;
             BackupConfig = backupConfig;
@@ -43,8 +43,6 @@ namespace EasySaveBusiness.Services
             FileProcessingService = fileProcessingService;
             WorkAppMonitorService = workAppMonitorService;
             _FullState = BackupJobFullState.FromBackupConfig(backupConfig);
-
-            WorkAppMonitorService.WorkAppStopped += OnWorkAppStopped;
             Systemmre = systemmre;
         }
 
@@ -80,7 +78,6 @@ namespace EasySaveBusiness.Services
                 throw new Exception("Backup job is not running");
             }
             _FullState = _FullState with { State = BackupJobState.SYSTEM_PAUSED };
-            Systemmre.WaitOne();
         }
         public void Stop()
         {
@@ -122,6 +119,7 @@ namespace EasySaveBusiness.Services
                 if (_isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp) || _isNetworkUsageExceed.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit))
                 {
                    SystemPause();
+                   Systemmre.WaitOne();
                 }
                 else
                 {
@@ -163,7 +161,7 @@ namespace EasySaveBusiness.Services
                         {
                             if (files.Length <= i + 1)
                             {
-                                // lock my backupjob until isNetworkUsageExceeded is false
+                                SystemPause();
                                 lockEvent.Reset();
                                 lockEvent.Wait(cancellationToken);
                             }

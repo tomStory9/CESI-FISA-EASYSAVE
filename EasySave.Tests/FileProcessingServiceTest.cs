@@ -49,8 +49,8 @@ namespace EasySaveBusiness.Tests
             };
 
             var easySaveConfig = new EasySaveConfig(new List<BackupConfig> { backupConfig }, _workApp, LoggerDLL.Models.LogType.LogTypeEnum.JSON, new List<string>(), 1024, "eth0", 1024 * 1024 * 5);
-
-            _backupJobService = new BackupJobService(_loggerService, backupConfig, easySaveConfig, _fileProcessingService, _workAppMonitorService);
+            ManualResetEvent manualResetEvent = new ManualResetEvent(false);
+            _backupJobService = new BackupJobService(_loggerService, backupConfig, easySaveConfig, _fileProcessingService, _workAppMonitorService,manualResetEvent);
             _fileProcessingService = new FileProcessingService(_loggerService, _differentialBackupVerifierService, _backupJobService);
         }
 

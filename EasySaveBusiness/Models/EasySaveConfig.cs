@@ -16,6 +16,7 @@ namespace EasySaveBusiness.Models
         public string NetworkInterfaceName { get; }
         public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; }
         public int SizeLimit { get; }
+        public string Bytes { get; }
 
         public EasySaveConfig(List<BackupConfig> backupConfigs, string workApp, LoggerDLL.Models.LogType.LogTypeEnum logType, List<string> priorityFileExtension , int networkKoUsageLimit , string networkInterfaceName , int sizeLimit)
         {
