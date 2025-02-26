@@ -12,7 +12,16 @@ namespace EasySaveBusiness.Services
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
         public List<BackupConfig> BackupConfigs { get; private set; } = [];
-        public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON,new List<string>(),0, "vEthernet (Default Switch)" ,100000);
+        public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(
+            new List<BackupConfig>(),
+            "notepad.exe",
+            LoggerDLL.Models.LogType.LogTypeEnum.JSON,
+            new List<string>(),
+            0,
+            "vEthernet (Default Switch)",
+            100000,
+            "changeme"
+        );
 
         public EasySaveConfigService()
         {
@@ -31,7 +40,16 @@ namespace EasySaveBusiness.Services
                 }
                 else
                 {
-                    EasySaveConfig = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON, new List<string>(), 0, "vEthernet (Default Switch)", 100000);
+                    EasySaveConfig = new EasySaveConfig(
+                        new List<BackupConfig>(),
+                        "notepad.exe",
+                        LoggerDLL.Models.LogType.LogTypeEnum.JSON,
+                        new List<string>(),
+                        0,
+                        "vEthernet (Default Switch)",
+                        100000,
+                        "changeme"
+                    );
                     BackupConfigs = new List<BackupConfig>();
                 }
             }
@@ -102,7 +120,16 @@ namespace EasySaveBusiness.Services
                 {
                     Directory.CreateDirectory(AppDataPath);
                 }
-                EasySaveConfig = new EasySaveConfig(BackupConfigs, EasySaveConfig.WorkApp, EasySaveConfig.LogType, EasySaveConfig.PriorityFileExtension, EasySaveConfig.NetworkKoLimit , EasySaveConfig.NetworkInterfaceName,EasySaveConfig.SizeLimit);
+                EasySaveConfig = new EasySaveConfig(
+                    BackupConfigs,
+                    EasySaveConfig.WorkApp,
+                    EasySaveConfig.LogType,
+                    EasySaveConfig.PriorityFileExtension,
+                    EasySaveConfig.NetworkKoLimit,
+                    EasySaveConfig.NetworkInterfaceName,
+                    EasySaveConfig.SizeLimit,
+                    EasySaveConfig.Key
+                );
                 string json = JsonSerializer.Serialize(EasySaveConfig, new JsonSerializerOptions
                 {
                     WriteIndented = true,

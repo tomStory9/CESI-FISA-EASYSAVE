@@ -24,6 +24,7 @@ namespace EasySaveBusiness.Models
                 SourceDirectory = backupConfig.SourceDirectory,
                 TargetDirectory = backupConfig.TargetDirectory,
                 Type = backupConfig.Type,
+                Encrypted = backupConfig.Encrypted,
             };
         }
     }

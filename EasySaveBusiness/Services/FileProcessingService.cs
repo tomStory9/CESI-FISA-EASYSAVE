@@ -71,14 +71,14 @@ public class FileProcessingService
             }
         }
 
-        var newState = _backupJobService.FullState with
+        var newState = new FileProcessedEventData
         {
             NbFilesLeftToDo = totalFiles - completedFiles,
             Progression = (int)((completedSize * 100) / totalFilesSize),
             SourceFilePath = file,
             TargetFilePath = destinationFile
         };
-        _backupJobService.UpdateBackupJobFullState(newState);
+        FileProcessed?.Invoke(this, newState);
     }
 
     public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, ManualResetEventSlim lockEvent, object lockObject)
