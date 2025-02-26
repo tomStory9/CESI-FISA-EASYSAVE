@@ -16,10 +16,10 @@ namespace EasySaveBusiness.Services
         private readonly string _interfaceName;
         private CancellationTokenSource? _cancellationTokenSource;
         private ManualResetEvent Systemmre { get; }
-        public NetworkUsageMonitorService(int limit , string InterfaceName ,ManualResetEvent systemmre)
+        public NetworkUsageMonitorService(EasySaveConfigService easySaveConfigService, ManualResetEvent systemmre)
         {
-            _interfaceName = InterfaceName;
-            _limit = limit;
+            _interfaceName = easySaveConfigService.EasySaveConfig.NetworkInterfaceName;
+            _limit = easySaveConfigService.EasySaveConfig.SizeLimit;
             Systemmre = systemmre;
         }
 

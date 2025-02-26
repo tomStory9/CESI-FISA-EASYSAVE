@@ -14,7 +14,7 @@ namespace EasySaveBusiness.Services
     {
         public event EventHandler<BackupJobFullState>? BackupJobFullStateChanged;
         private LoggerService LoggerService { get; }
-        private BackupConfig BackupConfig { get; }
+        private BackupConfig BackupConfig { get; set; }
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
         private WorkAppMonitorService WorkAppMonitorService { get; }
@@ -35,15 +35,40 @@ namespace EasySaveBusiness.Services
 
         private CancellationTokenSource? _cancellationTokenSource;
 
-        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig, FileProcessingService fileProcessingService, WorkAppMonitorService workAppMonitorService, ManualResetEvent systemmre)
+        public BackupJobService(
+            LoggerService loggerService,
+            EasySaveConfigService easySaveConfigService,
+            FileProcessingService fileProcessingService,
+            WorkAppMonitorService workAppMonitorService,
+            ManualResetEvent systemmre
+        )
         {
             LoggerService = loggerService;
-            BackupConfig = backupConfig;
-            EasySaveConfig = easySaveConfig;
+            EasySaveConfig = easySaveConfigService.EasySaveConfig;
             FileProcessingService = fileProcessingService;
             WorkAppMonitorService = workAppMonitorService;
-            _FullState = BackupJobFullState.FromBackupConfig(backupConfig);
             Systemmre = systemmre;
+
+            FileProcessingService.FileProcessed += OnFileProcessed;
+        }
+
+        private void OnFileProcessed(object? sender, FileProcessedEventData e)
+        {
+            UpdateBackupJobFullState(
+                FullState with
+                {
+                    NbFilesLeftToDo = e.NbFilesLeftToDo,
+                    Progression = e.Progression,
+                    SourceFilePath = e.SourceFilePath,
+                    TargetFilePath = e.TargetFilePath
+                }
+            );
+        }
+
+        public void Init(BackupConfig backupConfig)
+        {
+            BackupConfig = backupConfig;
+            _FullState = BackupJobFullState.FromBackupConfig(backupConfig);
         }
 
         public void Start()
@@ -58,7 +83,7 @@ namespace EasySaveBusiness.Services
                 _FullState = _FullState with { State = BackupJobState.ACTIVE };
             }
             _cancellationTokenSource = new CancellationTokenSource();
-           
+
             Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
         }
 
@@ -118,8 +143,8 @@ namespace EasySaveBusiness.Services
             {
                 if (_isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp) || _isNetworkUsageExceed.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit))
                 {
-                   SystemPause();
-                   Systemmre.WaitOne();
+                    SystemPause();
+                    Systemmre.WaitOne();
                 }
                 else
                 {

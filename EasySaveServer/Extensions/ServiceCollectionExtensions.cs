@@ -21,21 +21,33 @@ namespace EasySaveServer.Extensions
             var workAppName = "caca.exe";
             ManualResetEvent Systemmre = new ManualResetEvent(false);
 
+
             services.AddSingleton<EasySaveConfigService>();
             services.AddSingleton(provider => new LoggerService(logPath, LoggerDLL.Models.LogType.LogTypeEnum.JSON));
             services.AddSingleton<DifferentialBackupVerifierService>();
+            services.AddTransient(provider => new BackupJobService(
+                provider.GetRequiredService<LoggerService>(),
+                provider.GetRequiredService<EasySaveConfigService>(),
+                provider.GetRequiredService<FileProcessingService>(),
+                provider.GetRequiredService<WorkAppMonitorService>(),
+                Systemmre
+            ));
             services.AddSingleton(provider => new FileProcessingService(
                 provider.GetRequiredService<LoggerService>(),
-                provider.GetRequiredService<DifferentialBackupVerifierService>(),
-                provider.GetRequiredService<BackupJobService>()
+                provider.GetRequiredService<DifferentialBackupVerifierService>()
             ));
-            services.AddSingleton(provider => new WorkAppMonitorService(workAppName,Systemmre));
+            services.AddSingleton(provider => new WorkAppMonitorService(workAppName, Systemmre));
             services.AddSingleton(provider => new BackupFullStateLogger(fullStatePath));
             services.AddSingleton(provider => new BackupJobsService(
                 provider.GetRequiredService<EasySaveConfigService>(),
                 provider.GetRequiredService<LoggerService>(),
                 provider.GetRequiredService<FileProcessingService>(),
                 provider.GetRequiredService<WorkAppMonitorService>(),
+                Systemmre,
+                provider
+            ));
+            services.AddSingleton(provider => new NetworkUsageMonitorService(
+                provider.GetRequiredService<EasySaveConfigService>(),
                 Systemmre
             ));
             services.AddSingleton<IEasySaveController>(provider => new EasySaveController(

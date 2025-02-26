@@ -7,13 +7,16 @@ public class FileProcessingService
 {
     private readonly LoggerService _loggerService;
     private readonly DifferentialBackupVerifierService _differentialBackupVerifierService;
-    private readonly BackupJobService _backupJobService;
 
-    public FileProcessingService(LoggerService loggerService, DifferentialBackupVerifierService differentialBackupVerifierService, BackupJobService backupJobService)
+    public event EventHandler<FileProcessedEventData>? FileProcessed;
+
+    public FileProcessingService(
+        LoggerService loggerService,
+        DifferentialBackupVerifierService differentialBackupVerifierService
+    )
     {
         _differentialBackupVerifierService = differentialBackupVerifierService;
         _loggerService = loggerService;
-        _backupJobService = backupJobService;
     }
 
     public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, ManualResetEventSlim lockEvent, object lockObject)
@@ -49,7 +52,7 @@ public class FileProcessingService
             }
         }
 
-        var newState = _backupJobService.FullState with
+        var newState = new FileProcessedEventData
         {
             NbFilesLeftToDo = totalFiles - completedFiles,
             Progression = (int)((completedSize * 100) / totalFilesSize),
@@ -57,7 +60,6 @@ public class FileProcessingService
             TargetFilePath = destinationFile
         };
 
-        _backupJobService.UpdateBackupJobFullState(newState);
+        FileProcessed?.Invoke(this, newState);
     }
-
 }

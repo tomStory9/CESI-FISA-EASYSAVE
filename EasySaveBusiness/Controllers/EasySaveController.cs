@@ -38,8 +38,8 @@ namespace EasySaveBusiness.Controllers
         {
             // View.Init();
             _backupJobsService.BackupJobFullStatesChanged += OnBackupJobFullStateChanged;
-            View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
-            View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
+            await View.RefreshBackupConfigs(_backupConfigService.BackupConfigs);
+            await View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
             _workAppMonitorService.StartMonitoring();
             _networkUsageMonitorService.StartMonitoring();
         }

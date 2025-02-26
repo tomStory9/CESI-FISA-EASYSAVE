@@ -24,6 +24,7 @@ public class SocketServer : BackgroundService
         _controller.View = new RemoteView(this);
 
         _listener = new TcpListener(IPAddress.Any, 4201);
+
     }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
