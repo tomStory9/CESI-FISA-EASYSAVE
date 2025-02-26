@@ -7,5 +7,6 @@
         public required string SourceDirectory { get; init; }
         public required string TargetDirectory { get; init; }
         public required BackupType Type { get; init; }
+        public required Boolean Encrypted { get; init; }
     }
 }
