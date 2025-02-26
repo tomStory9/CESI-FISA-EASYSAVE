@@ -179,8 +179,14 @@ namespace EasySaveBusiness.Services
                         IsNetworkUsageExceeded.IsBigFileProcessing = true;
                     }
                 }
-
-                await FileProcessingService.ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject);
+                if (BackupConfig.Encrypted)
+                {
+                    await FileProcessingService.ProcessEncryptedFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject, EasySaveConfig.Key);
+                }
+                else
+                {
+                    await FileProcessingService.ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject);
+                }
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
