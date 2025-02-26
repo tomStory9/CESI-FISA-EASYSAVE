@@ -12,6 +12,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using DialogHostAvalonia;
 using EasySaveDesktop.Models;
 using Tmds.DBus.Protocol;
+using System.Threading.Tasks;
 
 namespace EasySaveDesktop.ViewModels
 {
@@ -34,9 +35,9 @@ namespace EasySaveDesktop.ViewModels
             BackupJobs.CollectionChanged += BackupJobs_CollectionChanged;
         }
 
-        public void Init()
+        public async Task Init()
         {
-            Controller.Init();
+            await Controller.Init();
         }
 
         private void BackupJobs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs? e)
@@ -70,7 +71,7 @@ namespace EasySaveDesktop.ViewModels
         }
 
         [RelayCommand]
-        private async void OpenCreateBackupConfigWindow()
+        private async Task OpenCreateBackupConfigWindow()
         {
             var createBackupConfigViewModel = new CreateBackupConfigViewModel();
             var createBackupConfigWindow = new CreateBackupConfigWindow
@@ -91,29 +92,32 @@ namespace EasySaveDesktop.ViewModels
 
         }
 
-        public void DisplayError(string errorMessage)
+        public async Task DisplayError(string errorMessage)
         {
             Console.WriteLine(errorMessage);
-            DialogHost.Show(new ErrorDialog(errorMessage));
+            await DialogHost.Show(new ErrorDialog(errorMessage));
         }
 
-        public void DisplayMessage(string message)
+        public async Task DisplayMessage(string message)
         {
+            await Task.CompletedTask;
             throw new System.NotImplementedException();
         }
 
-        public void RefreshBackupConfigs(List<BackupConfig> backupConfigs)
+        public async Task RefreshBackupConfigs(List<BackupConfig> backupConfigs)
         {
             BackupConfigs = backupConfigs;
+            await Task.CompletedTask;
         }
 
-        public void RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
+        public async Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
         {
             BackupJobs.Clear();
             foreach (var job in backupJobFullState)
             {
                 BackupJobs.Add(new BackupJobViewModel(Controller, job));
             }
+            await Task.CompletedTask;
         }
     }
 }

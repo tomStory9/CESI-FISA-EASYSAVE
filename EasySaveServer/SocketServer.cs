@@ -127,6 +127,7 @@ public class SocketServer : BackgroundService
 
     public void BroadcastEvent(string eventType, object payload)
     {
+        Console.WriteLine($"Broadcasting event: {eventType}");
         object message = new {
             Event = eventType,
             Payload = payload
@@ -139,6 +140,7 @@ public class SocketServer : BackgroundService
         {
             client.GetStream().Write(data);
         }
+        Console.WriteLine("stop");
     }
 
     private void SendErrorMessage(TcpClient client, string errorMessage)

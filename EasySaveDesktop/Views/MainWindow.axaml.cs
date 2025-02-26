@@ -13,12 +13,12 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        DataContextChanged += (sender, e) =>
+        /* DataContextChanged += (sender, e) =>
         {
             if (DataContext is MainWindowViewModel vm)
             {
                 vm.Init();
             }
-        };
+        }; */
     }
 }

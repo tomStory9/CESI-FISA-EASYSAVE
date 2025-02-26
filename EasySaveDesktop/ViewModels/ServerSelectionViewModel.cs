@@ -25,32 +25,45 @@ namespace EasySaveDesktop.ViewModels
         [Range(1, 65535)]
         private string port = "4201";
 
+        [ObservableProperty]
+        private bool isLoading;
+
         public Action<string, int> OnServerSelected { get; set; }
 
         [RelayCommand]
-        private void Connect()
+        private async Task ConnectAsync()
         {
             ValidateAllProperties();
 
             if (HasErrors) return;
 
-            OnServerSelected?.Invoke(Host, int.Parse(Port));
+            IsLoading = true;
 
-            if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            try
             {
-                var vm = new MainWindowViewModel();
-                var controller = new RemoteEasySaveController(host, int.Parse(Port));
-
-                vm.Controller = controller;
-                controller.View = vm;
-
-                var mainWindow = new MainWindow
+                if (Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
                 {
-                    DataContext = vm
-                };
-                mainWindow.Show();
-                /*desktop.MainWindow.Close();
-                desktop.MainWindow = mainWindow;*/
+                    var vm = new MainWindowViewModel();
+                    var controller = new RemoteEasySaveController(host, int.Parse(Port));
+
+                    vm.Controller = controller;
+                    controller.View = vm;
+
+                    await vm.Init();
+
+                    var mainWindow = new MainWindow
+                    {
+                        DataContext = vm
+                    };
+                    mainWindow.Show();
+
+                    desktop.MainWindow.Close();
+                    desktop.MainWindow = mainWindow;
+                }
+            }
+            finally
+            {
+                IsLoading = false;
             }
         }
     }

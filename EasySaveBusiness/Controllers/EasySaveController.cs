@@ -27,7 +27,7 @@ namespace EasySaveBusiness.Controllers
             _backupFullStateLogger = backupFullStateLogger;
         }
 
-        public void Init()
+        public async Task Init()
         {
             // View.Init();
             _backupJobsService.BackupJobFullStatesChanged += OnBackupJobFullStateChanged;
@@ -35,32 +35,37 @@ namespace EasySaveBusiness.Controllers
             View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
         }
 
-        public void AddBackupConfig(BackupConfig config)
+        public async Task AddBackupConfig(BackupConfig config)
         {
             var id = _backupConfigService.BackupConfigs.Count != 0
                 ? _backupConfigService.BackupConfigs.Max(bc => bc.Id) + 1
                 : 1;
             _backupConfigService.AddBackupConfig(config with { Id = id });
+            await Task.CompletedTask;
         }
 
-        public void EditBackupConfig(BackupConfig config)
+        public async Task EditBackupConfig(BackupConfig config)
         {
             _backupConfigService.EditBackupConfig(config);
+            await Task.CompletedTask;
         }
 
-        public void OverrideBackupConfigs(List<BackupConfig> configs)
+        public async Task OverrideBackupConfigs(List<BackupConfig> configs)
         {
             _backupConfigService.OverrideBackupConfigs(configs);
+            await Task.CompletedTask;
         }
 
-        public void RemoveBackupConfig(int id)
+        public async Task RemoveBackupConfig(int id)
         {
             _backupConfigService.RemoveBackupConfig(id);
+            await Task.CompletedTask;
         }
 
-        public void StartBackupJob(int id)
+        public async Task StartBackupJob(int id)
         {
             _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Start();
+            await Task.CompletedTask;
         }
 
         public void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)

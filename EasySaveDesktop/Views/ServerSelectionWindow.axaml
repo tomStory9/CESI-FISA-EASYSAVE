@@ -3,7 +3,9 @@
 		xmlns:vm="using:EasySaveDesktop.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
         mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+		Width="400" Height="200"
         x:Class="EasySaveDesktop.ServerSelectionWindow"
 		x:DataType="vm:ServerSelectionViewModel"
         Title="ServerSelectionWindow">
@@ -14,6 +16,11 @@
 		<TextBlock Text="Port:"/>
 		<TextBox Text="{Binding Port, Mode=TwoWay}"/>
 
-		<Button Content="Se Connecter" Command="{Binding ConnectCommand}"/>
+		<Button Command="{Binding ConnectCommand}">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="Connect"/>
+				<ProgressBar IsVisible="{Binding IsLoading}" Classes="circular" IsIndeterminate="True" Foreground="{DynamicResource MaterialSecondaryLightForegroundBrush}" />
+			</StackPanel>
+		</Button>
 	</StackPanel>
 </Window>

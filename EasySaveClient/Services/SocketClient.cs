@@ -60,13 +60,13 @@ namespace EasySaveClient.Services
                     {
                         case "RefreshBackupJobFullStates":
                             var backupJobFullStates = JsonSerializer.Deserialize<List<BackupJobFullState>>(response["Payload"].ToString());
-                            _view.RefreshBackupJobFullStates(backupJobFullStates);
+                            await _view.RefreshBackupJobFullStates(backupJobFullStates);
                             break;
                         case "DisplayMessage":
-                            _view.DisplayMessage(response["Payload"].ToString());
+                            await _view.DisplayMessage(response["Payload"].ToString());
                             break;
                         case "DisplayError":
-                            _view.DisplayError(response["Payload"].ToString());
+                            await _view.DisplayError(response["Payload"].ToString());
                             break;
                     }
                 }
