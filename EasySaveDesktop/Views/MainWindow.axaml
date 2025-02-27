@@ -62,6 +62,7 @@
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="{materialIcons:MaterialIconExt Kind=PlayArrow}" Command="{Binding StartCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStartEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=Pause}" Command="{Binding PauseCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsPauseEnabled}"/>
+										<Button Content="{materialIcons:MaterialIconExt Kind=Stop}" Command="{Binding StopCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStopEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=TrashCan}" Command="{Binding RemoveCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsRemoveEnabled}"/>
                                     </StackPanel>
                                 </DataTemplate>

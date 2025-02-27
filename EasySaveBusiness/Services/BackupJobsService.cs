@@ -44,7 +44,7 @@ namespace EasySaveBusiness.Services
             backupConfigService.BackupConfigRemoved += OnBackupConfigRemoved;
             backupConfigService.BackupConfigEdited += OnBackupConfigEdited;
 
-            _backupJobFullStateBroadcastTimer = new(100);
+            _backupJobFullStateBroadcastTimer = new(500);
             _backupJobFullStateBroadcastTimer.Elapsed += (sender, e) => BroadcastBackupJobFullStateIfNeeded();
             _backupJobFullStateBroadcastTimer.Start();
         }

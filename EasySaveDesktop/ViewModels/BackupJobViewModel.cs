@@ -36,6 +36,12 @@ namespace EasySaveDesktop.ViewModels
         private string? targetFilePath;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(
+            nameof(IsStartEnabled),
+            nameof(IsPauseEnabled),
+            nameof(IsStopEnabled),
+            nameof(IsRemoveEnabled)
+        )]
         private BackupJobState state;
 
         [ObservableProperty]
@@ -57,6 +63,7 @@ namespace EasySaveDesktop.ViewModels
 
         public bool IsStartEnabled => State == BackupJobState.STOPPED || State == BackupJobState.PAUSED;
         public bool IsPauseEnabled => State == BackupJobState.ACTIVE;
+        public bool IsStopEnabled => State != BackupJobState.STOPPED;
         public bool IsRemoveEnabled => State == BackupJobState.STOPPED;
 
         public BackupJobViewModel(IEasySaveController controller, BackupJobFullState backupJobFullState)
@@ -115,27 +122,18 @@ namespace EasySaveDesktop.ViewModels
         private async Task Start()
         {
             await _controller.StartBackupJob(Id);
-            OnPropertyChanged(nameof(IsStartEnabled));
-            OnPropertyChanged(nameof(IsPauseEnabled));
-            OnPropertyChanged(nameof(IsRemoveEnabled));
         }
 
         [RelayCommand]
         private async Task Pause()
         {
             await _controller.PauseBackupJob(Id);
-            OnPropertyChanged(nameof(IsStartEnabled));
-            OnPropertyChanged(nameof(IsPauseEnabled));
-            OnPropertyChanged(nameof(IsRemoveEnabled));
         }
 
         [RelayCommand]
         private async Task Stop()
         {
             await _controller.StopBackupJob(Id);
-            OnPropertyChanged(nameof(IsStartEnabled));
-            OnPropertyChanged(nameof(IsPauseEnabled));
-            OnPropertyChanged(nameof(IsRemoveEnabled));
         }
 
         [RelayCommand]
