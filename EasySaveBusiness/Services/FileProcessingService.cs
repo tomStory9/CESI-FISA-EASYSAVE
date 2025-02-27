@@ -32,7 +32,7 @@ public class FileProcessingService
 
         if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig, file, destinationFile))
         {
-            string cryptosoftCommand = $"cryptosoft encrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
+            string cryptosoftCommand = $"CryptoSoft encrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
@@ -94,7 +94,7 @@ public class FileProcessingService
 
         if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig, file, destinationFile))
         {
-            string cryptosoftCommand = $"cryptosoft decrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
+            string cryptosoftCommand = $"CryptoSoft decrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",

@@ -68,7 +68,52 @@ namespace EasySaveBusiness.Tests
             if (Directory.Exists(_targetDirectory))
                 Directory.Delete(_targetDirectory, true);
         }
-        
+        [Fact]
+        public async Task ExecuteRestoreAsync_ShouldRestoreFilesCorrectly()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted = false
+            };
+            var filePath = Path.Combine(_targetDirectory, "file1.txt");
+            File.WriteAllText(filePath, "Test content");
+
+            _backupJobService.Init(backupConfig);
+
+            // Act
+            _backupJobService.Start(BackupJobRequest.RESTORE);
+            await Task.Delay(1000); // Wait for the task to complete
+
+            // Assert
+            var restoredFilePath = Path.Combine(_sourceDirectory, "file1.txt");
+            Assert.True(File.Exists(restoredFilePath));
+            Assert.Equal("Test content", File.ReadAllText(restoredFilePath));
+        }
+
+        [Fact]
+        public void Start_ShouldThrowException_WhenInvalidRequest()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted = false
+            };
+            _backupJobService.Init(backupConfig);
+
+            // Act & Assert
+            Assert.Throws<Exception>(() => _backupJobService.Start((BackupJobRequest)999));
+        }
         [Fact]
         public async Task ExecuteBackupAsync_ShouldHandleConcurrentAccessAndLocks()
         {

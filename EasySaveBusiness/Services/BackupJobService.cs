@@ -77,7 +77,7 @@ namespace EasySaveBusiness.Services
             FullState = BackupJobFullState.FromBackupConfig(backupConfig);
         }
 
-        public void Start()
+        public void Start(BackupJobRequest request)
         {
             if (FullState.State == BackupJobState.ACTIVE)
             {
@@ -90,12 +90,17 @@ namespace EasySaveBusiness.Services
                 Usermre.Set();
             }
             _cancellationTokenSource = new CancellationTokenSource();
-            switch ()
+            switch (request)
             {
-                default:
-            Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
+                case BackupJobRequest.BACKUP:
+                    Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
                     break;
-        }
+                case BackupJobRequest.RESTORE:
+                    Task.Run(() => ExecuteRestoreAsync(_cancellationTokenSource.Token));
+                    break;
+                default:
+                    throw new Exception("Invalid backup job request");
+            }
 
         }
 
