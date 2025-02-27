@@ -1,0 +1,42 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:vm="clr-namespace:EasySaveDesktop.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="EasySaveDesktop.EasySaveConfigWindow"
+		x:DataType="vm:EasySaveConfigViewModel"
+        Title="EasySaveConfigWindow">
+	<StackPanel Margin="20">
+		<TextBlock Text="Configuration EasySave" FontSize="20" FontWeight="Bold" Margin="0,0,0,20"/>
+
+		<TextBlock Text="Application de travail:"/>
+		<TextBox Text="{Binding WorkApp}" Watermark="Entrez le nom de l'application de travail" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Extensions de fichiers prioritaires (séparées par des virgules):"/>
+		<TextBox Text="{Binding PriorityFileExtensions}" Watermark="Entrez les extensions de fichiers prioritaires" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Limite de Ko du réseau:"/>
+		<NumericUpDown Value="{Binding NetworkKoLimit}" Minimum="0" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Nom de l'interface réseau:"/>
+		<TextBox Text="{Binding NetworkInterfaceName}" Watermark="Entrez le nom de l'interface réseau" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Type de log:"/>
+		<ComboBox SelectedItem="{Binding LogType}" Margin="0,0,0,10">
+			<ComboBox.Items>
+				<ComboBoxItem Content="Type 1" />
+				<ComboBoxItem Content="Type 2" />
+				<ComboBoxItem Content="Type 3" />
+			</ComboBox.Items>
+		</ComboBox>
+
+		<TextBlock Text="Limite de taille:"/>
+		<NumericUpDown Value="{Binding SizeLimit}" Minimum="0" Margin="0,0,0,10"/>
+
+		<TextBlock Text="Clé (optionnel):"/>
+		<TextBox Text="{Binding Key}" Watermark="Entrez une clé (optionnel)" Margin="0,0,0,10"/>
+
+		<Button Content="Enregistrer" Command="{Binding SaveCommand}" HorizontalAlignment="Center" Margin="0,20,0,0"/>
+	</StackPanel>
+</Window>

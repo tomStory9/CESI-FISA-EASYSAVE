@@ -25,6 +25,8 @@ namespace EasySaveDesktop.ViewModels
         [ObservableProperty]
         private ObservableCollection<BackupJobViewModel> backupJobs = [];
 
+        private EasySaveConfig _easySaveConfig = EasySaveConfig.Defaults;
+
         public bool ShowMassActionButtons => BackupJobs.Any(job => job.IsChecked);
 
         public MainWindowViewModel()
@@ -80,13 +82,24 @@ namespace EasySaveDesktop.ViewModels
             {
                 await createBackupConfigWindow.ShowDialog<BackupConfigWizardViewModel>(desktop.MainWindow);
             }
+        }
 
-            /* createBackupConfigViewModel.BackupConfigCreated += (backupConfig) =>
+        [RelayCommand]
+        private async Task OpenEasySaveConfigWindow()
+        {
+            var createBackupConfigViewModel = new EasySaveConfigViewModel(
+                Controller,
+                _easySaveConfig
+            );
+            var createBackupConfigWindow = new EasySaveConfigWindow
             {
-                Controller.AddBackupConfig(backupConfig);
-                createBackupConfigWindow.Close();
-            }; */
+                DataContext = createBackupConfigViewModel
+            };
 
+            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                await createBackupConfigWindow.ShowDialog<EasySaveConfigWindow>(desktop.MainWindow);
+            }
         }
 
         public async Task DisplayError(string errorMessage)
@@ -113,8 +126,8 @@ namespace EasySaveDesktop.ViewModels
 
         public async Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig)
         {
+            _easySaveConfig = easySaveConfig;
             await Task.CompletedTask;
-            // throw new System.NotImplementedException();
         }
     }
 }

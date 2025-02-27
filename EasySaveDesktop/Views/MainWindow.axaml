@@ -79,6 +79,14 @@
                 Content="{materialIcons:MaterialIconExt Kind=Plus}"
                 Command="{Binding OpenCreateBackupConfigWindowCommand}"
             />
+
+			<controls:FloatingButton
+                HorizontalAlignment="Left"
+                VerticalAlignment="Bottom"
+                Margin="20"
+                Content="{materialIcons:MaterialIconExt Kind=Settings}"
+                Command="{Binding OpenEasySaveConfigWindowCommand}"
+            />
         </Grid>
     </dialogHost:DialogHost>
 

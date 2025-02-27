@@ -38,7 +38,8 @@ namespace EasySaveBusiness.Controllers
         {
             // View.Init();
             _backupJobsService.BackupJobFullStatesChanged += OnBackupJobFullStateChanged;
-            await View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
+            await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
             _workAppMonitorService.StartMonitoring();
             _networkUsageMonitorService.StartMonitoring();
         }
@@ -50,31 +51,34 @@ namespace EasySaveBusiness.Controllers
                 : 1;
             _backupConfigService.AddBackupConfig(config with { Id = id });
             await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
         }
 
         public async Task EditBackupConfig(BackupConfig config)
         {
             _backupConfigService.EditBackupConfig(config);
             await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
         }
 
         public async Task OverrideEasySaveConfig(EasySaveConfig config)
         {
             _backupConfigService.OverrideEasySaveConfig(config);
-            await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
         }
 
         public async Task OverrideBackupConfigs(List<BackupConfig> configs)
         {
             _backupConfigService.OverrideBackupConfigs(configs);
             await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
         }
 
         public async Task RemoveBackupConfig(int id)
         {
             _backupConfigService.RemoveBackupConfig(id);
-            Console.WriteLine(_backupConfigService.BackupConfigs);
             await RefreshBackupJobs();
+            await RefreshEasySaveConfig();
         }
 
         public async Task StartBackupJob(int id)
@@ -102,6 +106,11 @@ namespace EasySaveBusiness.Controllers
         private async Task RefreshBackupJobs()
         {
             await View.RefreshBackupJobFullStates(_backupJobsService.BackupJobFullStates);
+        }
+
+        private async Task RefreshEasySaveConfig()
+        {
+            await View.RefreshEasySaveConfig(_backupConfigService.EasySaveConfig);
         }
     }
 }

@@ -17,7 +17,7 @@ namespace EasySaveBusiness.Models
         public string NetworkInterfaceName { get; }
         public LoggerDLL.Models.LogType.LogTypeEnum LogType { get; }
         public int SizeLimit { get; }
-        public string Key { get; }
+        public string? Key { get; }
 
         [JsonConstructor]
         public EasySaveConfig(
@@ -28,7 +28,7 @@ namespace EasySaveBusiness.Models
             string networkInterfaceName,
             LoggerDLL.Models.LogType.LogTypeEnum logType,
             int sizeLimit,
-            string key
+            string? key
         )
         {
             BackupConfigs = backupConfigs;
@@ -49,7 +49,7 @@ namespace EasySaveBusiness.Models
             "Ethernet",
             LoggerDLL.Models.LogType.LogTypeEnum.JSON,
             1000,
-            "password"
+            null
         );
     }
 
