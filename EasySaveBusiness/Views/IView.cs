@@ -13,10 +13,10 @@ namespace EasySaveBusiness.Views
     {
         public IEasySaveController Controller { protected get; set; }
 
-        public void Init();
-        public void RefreshBackupConfigs(List<BackupConfig> backupConfigs);
-        public void RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState);
-        public void DisplayMessage(string message);
-        public void DisplayError(string errorMessage);
+        public Task Init();
+        public Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig);
+        public Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullStates);
+        public Task DisplayMessage(string message);
+        public Task DisplayError(string errorMessage);
     }
 }

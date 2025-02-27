@@ -14,37 +14,60 @@ namespace EasySaveClient.Controllers
     {
         public IView View { get; set; }
         private SocketClient _socketClient;
+        private string _host;
+        private int _port;
 
-        public void Init()
+        public RemoteEasySaveController(string host, int port)
+        {
+            _host = host;
+            _port = port;
+        }
+
+        public async Task Init()
         {
             _socketClient = new SocketClient(View);
-            _socketClient.ConnectAsync().Wait();
-            _socketClient.SendCommandAsync("Init", null).Wait();
+            await _socketClient.ConnectAsync(_host, _port);
+            await _socketClient.SendCommandAsync("Init", null);
         }
 
-        public void AddBackupConfig(BackupConfig config)
+        public async Task AddBackupConfig(BackupConfig config)
         {
-            _socketClient.SendCommandAsync("AddBackupConfig", config).Wait();
+            await _socketClient.SendCommandAsync("AddBackupConfig", config);
         }
 
-        public void EditBackupConfig(BackupConfig config)
+        public async Task EditBackupConfig(BackupConfig config)
         {
-            _socketClient.SendCommandAsync("EditBackupConfig", config).Wait();
+            await _socketClient.SendCommandAsync("EditBackupConfig", config);
         }
 
-        public void OverrideBackupConfigs(List<BackupConfig> configs)
+        public async Task OverrideBackupConfigs(List<BackupConfig> configs)
         {
-            _socketClient.SendCommandAsync("OverrideBackupConfigs", configs).Wait();
+            await _socketClient.SendCommandAsync("OverrideBackupConfigs", configs);
         }
 
-        public void RemoveBackupConfig(int id)
+        public async Task OverrideEasySaveConfig(EasySaveConfig config)
         {
-            _socketClient.SendCommandAsync("RemoveBackupConfig", id).Wait();
+            await _socketClient.SendCommandAsync("OverrideEasySaveConfig", config);
         }
 
-        public void StartBackupJob(int id)
+        public async Task RemoveBackupConfig(int id)
         {
-            _socketClient.SendCommandAsync("StartBackupJob", id).Wait();
+            await _socketClient.SendCommandAsync("RemoveBackupConfig", id);
+        }
+
+        public async Task StartBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("StartBackupJob", id);
+        }
+
+        public async Task PauseBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("PauseBackupJob", id);
+        }
+
+        public async Task StopBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("StopBackupJob", id);
         }
 
         public void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates)

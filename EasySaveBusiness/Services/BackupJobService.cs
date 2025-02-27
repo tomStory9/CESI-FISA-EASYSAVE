@@ -14,13 +14,15 @@ namespace EasySaveBusiness.Services
     {
         public event EventHandler<BackupJobFullState>? BackupJobFullStateChanged;
         private LoggerService LoggerService { get; }
-        private BackupConfig BackupConfig { get; }
+        private BackupConfig BackupConfig { get; set; }
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
-        private WorkAppMonitorService WorkAppMonitorService { get; }
+        private IsNetworkUsageExceededService _isNetworkUsageExceedService { get; }
+        private IsRunningWorkAppService _isRunningWorkAppService { get; }
         private SortBackupFileService SortBackupFileService { get; }
         private BackupJobFullState _FullState;
-
+        private ManualResetEvent Systemmre { get; }
+        private ManualResetEvent Usermre { get; }
         public BackupJobFullState FullState
         {
             get { return _FullState; }
@@ -33,16 +35,46 @@ namespace EasySaveBusiness.Services
 
         private CancellationTokenSource? _cancellationTokenSource;
 
-        public BackupJobService(LoggerService loggerService, BackupConfig backupConfig, EasySaveConfig easySaveConfig, FileProcessingService fileProcessingService, WorkAppMonitorService workAppMonitorService)
+        public BackupJobService(
+            LoggerService loggerService,
+            EasySaveConfigService easySaveConfigService,
+            FileProcessingService fileProcessingService,
+            SortBackupFileService sortBackupFileService,
+            IsRunningWorkAppService isRunningWorkAppService,
+            IsNetworkUsageExceededService isNetworkUsageExceedService,
+            ManualResetEvent systemmre
+            
+        )
         {
             LoggerService = loggerService;
-            BackupConfig = backupConfig;
-            EasySaveConfig = easySaveConfig;
+            EasySaveConfig = easySaveConfigService.EasySaveConfig;
             FileProcessingService = fileProcessingService;
-            WorkAppMonitorService = workAppMonitorService;
-            _FullState = BackupJobFullState.FromBackupConfig(backupConfig);
+            SortBackupFileService = sortBackupFileService;
+            _isRunningWorkAppService = isRunningWorkAppService;
+            _isNetworkUsageExceedService = isNetworkUsageExceedService;
+            Systemmre = systemmre;
+            Usermre = new ManualResetEvent(false);
 
-            WorkAppMonitorService.WorkAppStopped += OnWorkAppStopped;
+            FileProcessingService.FileProcessed += OnFileProcessed;
+        }
+
+        private void OnFileProcessed(object? sender, FileProcessedEventData e)
+        {
+            UpdateBackupJobFullState(
+                FullState with
+                {
+                    NbFilesLeftToDo = e.NbFilesLeftToDo,
+                    Progression = e.Progression,
+                    SourceFilePath = e.SourceFilePath,
+                    TargetFilePath = e.TargetFilePath
+                }
+            );
+        }
+
+        public void Init(BackupConfig backupConfig)
+        {
+            BackupConfig = backupConfig;
+            FullState = BackupJobFullState.FromBackupConfig(backupConfig);
         }
 
         public void Start()
@@ -52,7 +84,11 @@ namespace EasySaveBusiness.Services
                 Console.WriteLine("Backup job already running");
                 // throw new Exception("Backup job already running");
             }
-
+            if (FullState.State == BackupJobState.PAUSED)
+            {
+                FullState = FullState with { State = BackupJobState.ACTIVE };
+                Usermre.Set();
+            }
             _cancellationTokenSource = new CancellationTokenSource();
 
             Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
@@ -65,10 +101,16 @@ namespace EasySaveBusiness.Services
                 throw new Exception("Backup job is not running");
             }
 
-            _FullState = _FullState with { State = BackupJobState.PAUSED };
-            _cancellationTokenSource?.Cancel();
+            FullState = FullState with { State = BackupJobState.PAUSED };
         }
-
+        private void SystemPause()
+        {
+            if (FullState.State != BackupJobState.ACTIVE)
+            {
+                throw new Exception("Backup job is not running");
+            }
+            FullState = FullState with { State = BackupJobState.SYSTEM_PAUSED };
+        }
         public void Stop()
         {
             if (FullState.State == BackupJobState.STOPPED)
@@ -76,7 +118,7 @@ namespace EasySaveBusiness.Services
                 throw new Exception("Backup job is not running");
             }
 
-            _FullState = _FullState with { State = BackupJobState.STOPPED };
+            FullState = FullState with { State = BackupJobState.STOPPED };
             _cancellationTokenSource?.Cancel();
         }
 
@@ -89,7 +131,8 @@ namespace EasySaveBusiness.Services
             long totalFilesSize = files.Sum(f => new FileInfo(f).Length);
             long totalFiles = files.Length;
 
-            _FullState = _FullState with {
+            FullState = FullState with
+            {
                 State = BackupJobState.ACTIVE,
                 TotalFilesToCopy = totalFiles,
                 TotalFilesSize = totalFilesSize,
@@ -100,12 +143,33 @@ namespace EasySaveBusiness.Services
             int completedFiles = 0;
             long completedSize = 0;
             int i = 0;
+            var lockEvent = new ManualResetEventSlim(true);
+            object lockObject = new object();
 
             while (i < files.Length)
             {
+                if(FullState.State == BackupJobState.PAUSED)
+                {
+                    Usermre.WaitOne();
+                }
+
+                if (
+                    false
+                    // _isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp)
+                    // || _isNetworkUsageExceedService.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit)
+                )
+                {
+                    SystemPause();
+                    Systemmre.WaitOne();
+                }
+                else
+                {
+                    /* FullState = FullState with
+                    { State = BackupJobState.ACTIVE }; */
+                }
                 if (cancellationToken.IsCancellationRequested)
                 {
-                    _FullState = _FullState with
+                    FullState = FullState with
                     {
                         NbFilesLeftToDo = totalFiles - completedFiles,
                         Progression = (int)((completedSize * 100) / totalFilesSize)
@@ -115,7 +179,7 @@ namespace EasySaveBusiness.Services
 
                 var file = files[i];
 
-                if (BackupConfig.Type == BackupType.Differential && IsRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp))
+                if (BackupConfig.Type == BackupType.Differential && _isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp))
                 {
                     LoggerService.AddLog(new
                     {
@@ -123,63 +187,60 @@ namespace EasySaveBusiness.Services
                         Description = "Backup job stopped because work app has been launched"
                     });
 
-                    _FullState = _FullState with
+                    FullState = FullState with
                     {
                         State = BackupJobState.STOPPED,
                     };
                     return;
                 }
 
-                await ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize);
+                lock (lockObject)
+                {
+                    if (IsNetworkUsageExceededService.IsBigFileProcessing)
+                    {
+                        if (file.Length >= EasySaveConfig.SizeLimit)
+                        {
+                            if (files.Length <= i + 1)
+                            {
+                                SystemPause();
+                                lockEvent.Reset();
+                                lockEvent.Wait(cancellationToken);
+                            }
+                            else
+                            {
+                                var BigFile = file;
+                                file = files[i + 1];
+                                files[i + 1] = BigFile;
+                            }
+                        }
+                    }
+
+                    if (file.Length >= EasySaveConfig.SizeLimit)
+                    {
+                        IsNetworkUsageExceededService.IsBigFileProcessing = true;
+                    }
+                }
+                if (BackupConfig.Encrypted)
+                {
+                    await FileProcessingService.ProcessEncryptedFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject, EasySaveConfig.Key);
+                }
+                else
+                {
+                    await FileProcessingService.ProcessFileAsync(BackupConfig, file, completedFiles, completedSize, totalFiles, totalFilesSize, lockEvent, lockObject);
+                }
                 completedFiles++;
                 completedSize += new FileInfo(file).Length;
                 i++;
             }
 
-            _FullState = BackupJobFullState.FromBackupConfig(BackupConfig);
+            FullState = BackupJobFullState.FromBackupConfig(BackupConfig);
 
             Console.WriteLine($"Backup {BackupConfig.Name} completed.");
         }
 
-        public async Task ProcessFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize)
+        public void UpdateBackupJobFullState(BackupJobFullState newState)
         {
-            string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
-            string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
-            string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
-
-            if (!Directory.Exists(destinationDir))
-            {
-                Directory.CreateDirectory(destinationDir);
-            }
-            Stopwatch stopwatch = Stopwatch.StartNew();
-
-            //if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig,file,destinationFile))
-            //{
-            // File.Copy(file, destinationFile, true);
-            using (FileStream sourceStream = new FileStream(file, FileMode.Open, FileAccess.Read, FileShare.Read, bufferSize: 4096, useAsync: true))
-            using (FileStream destinationStream = new FileStream(destinationFile, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
-            {
-                await sourceStream.CopyToAsync(destinationStream);
-            }
-            //}
-            stopwatch.Stop();
-            double transferTime = stopwatch.Elapsed.TotalMilliseconds;
-
-            _FullState = _FullState with
-            {
-                NbFilesLeftToDo = totalFiles - completedFiles,
-                Progression = (int)((completedSize * 100) / totalFilesSize),
-                SourceFilePath = file,
-                TargetFilePath = destinationFile
-            };
-        }
-
-        private void OnWorkAppStopped(object? sender, EventArgs e)
-        {
-            if (FullState.State == BackupJobState.STOPPED)
-            {
-                Start();
-            }
+            FullState = newState;
         }
     }
 }

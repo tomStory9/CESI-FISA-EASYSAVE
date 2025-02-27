@@ -4,10 +4,12 @@ using Avalonia.Markup.Xaml;
 
 namespace EasySaveDesktop;
 
-public partial class CreateBackupConfigWindow : Window
+public partial class ServerSelectionWindow : Window
 {
-    public CreateBackupConfigWindow()
+    public ServerSelectionWindow()
     {
         InitializeComponent();
     }
+
+
 }

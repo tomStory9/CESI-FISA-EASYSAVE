@@ -14,17 +14,22 @@ namespace EasySaveBusiness.Controllers
     {
         public IView View { protected get; set; }
 
-        public void Init();
+        public Task Init();
 
-        public void AddBackupConfig(BackupConfig config);
+        public Task AddBackupConfig(BackupConfig config);
 
-        public void EditBackupConfig(BackupConfig config);
+        public Task EditBackupConfig(BackupConfig config);
+        public Task OverrideEasySaveConfig(EasySaveConfig config);
 
-        public void OverrideBackupConfigs(List<BackupConfig> configs);
+        public Task OverrideBackupConfigs(List<BackupConfig> configs);
 
-        public void RemoveBackupConfig(int id);
+        public Task RemoveBackupConfig(int id);
 
-        public void StartBackupJob(int id);
+        public Task StartBackupJob(int id);
+
+        public Task PauseBackupJob(int id);
+
+        public Task StopBackupJob(int id);
 
         protected void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates);
     }

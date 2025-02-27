@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EasySaveDesktop.ViewModels
+namespace EasySaveDesktop.Models
 {
-    public class CreateBackupConfigViewModel : ViewModelBase
+    class ErrorDialog(string message)
     {
+        public string Message { get; set; } = message;
     }
 }

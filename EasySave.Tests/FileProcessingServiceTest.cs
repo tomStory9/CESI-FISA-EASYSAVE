@@ -3,14 +3,16 @@ using EasySaveBusiness.Services;
 using LoggerDLL.Services;
 using System;
 using System.IO;
-using System.Linq;
+using System.Security.Cryptography;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using System.Collections;
+
 
 namespace EasySaveBusiness.Tests
 {
-    public class BackupJobServiceTests : IDisposable
+    public class FileProcessingServiceTests : IDisposable
     {
         private readonly string _sourceDirectory;
         private readonly string _targetDirectory;
@@ -26,18 +28,15 @@ namespace EasySaveBusiness.Tests
         private readonly string _logFilePath = Path.Combine(Path.GetTempPath(), "backup_full_state_log.json");
         private readonly string _workApp = "notepad.exe";
 
-
-        public BackupJobServiceTests()
+        public FileProcessingServiceTests()
         {
             _sourceDirectory = Path.Combine(Path.GetTempPath(), $"SourceDir_{Guid.NewGuid()}");
             _targetDirectory = Path.Combine(Path.GetTempPath(), $"TargetDir_{Guid.NewGuid()}");
             Directory.CreateDirectory(_sourceDirectory);
             Directory.CreateDirectory(_targetDirectory);
-
+            ManualResetEvent systemMre = new ManualResetEvent(false);
             _loggerService = new LoggerService(_logFilePath, LoggerDLL.Models.LogType.LogTypeEnum.JSON);
             _differentialBackupVerifierService = new DifferentialBackupVerifierService();
-            ManualResetEvent systemMre = new ManualResetEvent(false);
-            _workAppMonitorService = new WorkAppMonitorService(_workApp,systemMre);
             _isRunningWorkAppService = new IsRunningWorkAppService();
             _isNetworkUsageExceeded = new IsNetworkUsageExceededService();
             _sortBackupFileService = new SortBackupFileService();
@@ -52,13 +51,12 @@ namespace EasySaveBusiness.Tests
                 Encrypted = false
             };
 
-            var easySaveConfig = new EasySaveConfig(new List<BackupConfig> { backupConfig }, _workApp, new List<string>(), 1024, "eth0", LoggerDLL.Models.LogType.LogTypeEnum.JSON, 1024 * 1024 * 5,null);
+            var easySaveConfig = new EasySaveConfig(new List<BackupConfig> { backupConfig }, _workApp, new List<string>(), 1024, "eth0", LoggerDLL.Models.LogType.LogTypeEnum.JSON, 1024 * 1024 * 5, null);
             ManualResetEvent manualResetEvent = new ManualResetEvent(false);
             _fileProcessingService = new FileProcessingService(_loggerService, _differentialBackupVerifierService);
-            _backupJobService = new BackupJobService(_loggerService, _easySaveBackupConfig, _fileProcessingService, _sortBackupFileService,_isRunningWorkAppService,_isNetworkUsageExceeded,systemMre);
-            _backupJobService.Init(backupConfig);
+            _backupJobService = new BackupJobService(_loggerService, _easySaveBackupConfig, _fileProcessingService, _sortBackupFileService, _isRunningWorkAppService, _isNetworkUsageExceeded, systemMre);
+         _backupJobService.Init(backupConfig);
         }
-
 
         public void Dispose()
         {
@@ -68,9 +66,65 @@ namespace EasySaveBusiness.Tests
             if (Directory.Exists(_targetDirectory))
                 Directory.Delete(_targetDirectory, true);
         }
-        
+
         [Fact]
-        public async Task ExecuteBackupAsync_ShouldHandleConcurrentAccessAndLocks()
+        public async Task ProcessFileAsync_ShouldCopyFile_WhenFileNeedsToBeCopied()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted = false
+            };
+            var filePath = Path.Combine(_sourceDirectory, "file1.txt");
+            File.WriteAllText(filePath, "Test content");
+
+            var lockEvent = new ManualResetEventSlim();
+            var lockObject = new object();
+
+            // Act
+            await _fileProcessingService.ProcessFileAsync(backupConfig, filePath, 0, 0, 1, 1024, lockEvent, lockObject);
+
+            // Assert
+            var destinationFilePath = Path.Combine(_targetDirectory, "file1.txt");
+            Assert.True(File.Exists(destinationFilePath));
+            Assert.Equal("Test content", File.ReadAllText(destinationFilePath));
+        }
+
+        [Fact]
+        public async Task ProcessFileAsync_ShouldHandleBigFileProcessing()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted= false
+            };
+            var filePath = Path.Combine(_sourceDirectory, "bigfile1.txt");
+            File.WriteAllText(filePath, new string('a', 1024 * 1024 * 10)); // 10 MB file
+
+            var lockEvent = new ManualResetEventSlim();
+            var lockObject = new object();
+
+            // Act
+            await _fileProcessingService.ProcessFileAsync(backupConfig, filePath, 0, 0, 1, 1024 * 1024 * 10, lockEvent, lockObject);
+
+            // Assert
+            var destinationFilePath = Path.Combine(_targetDirectory, "bigfile1.txt");
+            Assert.True(File.Exists(destinationFilePath));
+            Assert.Equal(new string('a', 1024 * 1024 * 10), File.ReadAllText(destinationFilePath));
+        }
+
+        [Fact]
+        public async Task ProcessFileAsync_ShouldHandleConcurrentAccessAndLocks()
         {
             // Arrange
             var backupConfig = new BackupConfig

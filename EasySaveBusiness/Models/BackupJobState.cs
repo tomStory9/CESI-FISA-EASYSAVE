@@ -10,6 +10,7 @@ namespace EasySaveBusiness.Models
     {
         ACTIVE,
         PAUSED,
-        STOPPED
+        STOPPED,
+        SYSTEM_PAUSED
     }
 }

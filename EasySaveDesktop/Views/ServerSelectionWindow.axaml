@@ -1,0 +1,26 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:vm="using:EasySaveDesktop.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:controls="clr-namespace:Material.Styles.Controls;assembly=Material.Styles"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="200"
+		Width="400" Height="200"
+        x:Class="EasySaveDesktop.ServerSelectionWindow"
+		x:DataType="vm:ServerSelectionViewModel"
+        Title="ServerSelectionWindow">
+	<StackPanel Margin="20">
+		<TextBlock Text="Adresse IP du serveur:"/>
+		<TextBox Text="{Binding Host, Mode=TwoWay}"/>
+
+		<TextBlock Text="Port:"/>
+		<TextBox Text="{Binding Port, Mode=TwoWay}"/>
+
+		<Button Command="{Binding ConnectCommand}">
+			<StackPanel Orientation="Horizontal">
+				<TextBlock Text="Connect"/>
+				<ProgressBar IsVisible="{Binding IsLoading}" Classes="circular" IsIndeterminate="True" Foreground="{DynamicResource MaterialSecondaryLightForegroundBrush}" />
+			</StackPanel>
+		</Button>
+	</StackPanel>
+</Window>

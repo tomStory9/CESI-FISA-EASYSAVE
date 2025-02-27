@@ -26,22 +26,22 @@ public partial class App : Application
         collection.AddCommonServices();
 
         // Creates a ServiceProvider containing services from the provided IServiceCollection
-        var services = collection.BuildServiceProvider();
+        /* var services = collection.BuildServiceProvider();
 
         var vm = services.GetRequiredService<MainWindowViewModel>();
         var controller = services.GetRequiredService<IEasySaveController>();
 
         vm.Controller = controller;
-        controller.View = vm;
+        controller.View = vm; */
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit. 
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new MainWindow
+            desktop.MainWindow = new ServerSelectionWindow
             {
-                DataContext = vm
+                DataContext = new ServerSelectionViewModel()
             };
         }
 

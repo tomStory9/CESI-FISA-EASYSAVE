@@ -9,6 +9,10 @@ using System;
 using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using DialogHostAvalonia;
+using EasySaveDesktop.Models;
+using Tmds.DBus.Protocol;
+using System.Threading.Tasks;
 
 namespace EasySaveDesktop.ViewModels
 {
@@ -19,10 +23,9 @@ namespace EasySaveDesktop.ViewModels
         public string Greeting { get; } = "Welcome to Avalonia!";
 
         [ObservableProperty]
-        private List<BackupConfig> backupConfigs = [];
-
-        [ObservableProperty]
         private ObservableCollection<BackupJobViewModel> backupJobs = [];
+
+        private EasySaveConfig _easySaveConfig = EasySaveConfig.Defaults;
 
         public bool ShowMassActionButtons => BackupJobs.Any(job => job.IsChecked);
 
@@ -31,9 +34,9 @@ namespace EasySaveDesktop.ViewModels
             BackupJobs.CollectionChanged += BackupJobs_CollectionChanged;
         }
 
-        public void Init()
+        public async Task Init()
         {
-            Controller.Init();
+            await Controller.Init();
         }
 
         private void BackupJobs_CollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs? e)
@@ -67,49 +70,64 @@ namespace EasySaveDesktop.ViewModels
         }
 
         [RelayCommand]
-        private async void OpenCreateBackupConfigWindow()
+        private async Task OpenCreateBackupConfigWindow()
         {
-            var createBackupConfigViewModel = new CreateBackupConfigViewModel();
-            var createBackupConfigWindow = new CreateBackupConfigWindow
+            var createBackupConfigViewModel = new BackupConfigWizardViewModel(Controller);
+            var createBackupConfigWindow = new BackupConfigWizardWindow
             {
                 DataContext = createBackupConfigViewModel
             };
 
             if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
             {
-                await createBackupConfigWindow.ShowDialog<CreateBackupConfigViewModel>(desktop.MainWindow);
+                await createBackupConfigWindow.ShowDialog<BackupConfigWizardViewModel>(desktop.MainWindow);
             }
+        }
 
-            /* createBackupConfigViewModel.BackupConfigCreated += (backupConfig) =>
+        [RelayCommand]
+        private async Task OpenEasySaveConfigWindow()
+        {
+            var createBackupConfigViewModel = new EasySaveConfigViewModel(
+                Controller,
+                _easySaveConfig
+            );
+            var createBackupConfigWindow = new EasySaveConfigWindow
             {
-                Controller.AddBackupConfig(backupConfig);
-                createBackupConfigWindow.Close();
-            }; */
+                DataContext = createBackupConfigViewModel
+            };
 
+            if (Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+            {
+                await createBackupConfigWindow.ShowDialog<EasySaveConfigWindow>(desktop.MainWindow);
+            }
         }
 
-        public void DisplayError(string errorMessage)
+        public async Task DisplayError(string errorMessage)
         {
+            Console.WriteLine(errorMessage);
+            await DialogHost.Show(new ErrorDialog(errorMessage));
+        }
+
+        public async Task DisplayMessage(string message)
+        {
+            await Task.CompletedTask;
             throw new System.NotImplementedException();
         }
 
-        public void DisplayMessage(string message)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void RefreshBackupConfigs(List<BackupConfig> backupConfigs)
-        {
-            BackupConfigs = backupConfigs;
-        }
-
-        public void RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
+        public async Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullState)
         {
             BackupJobs.Clear();
             foreach (var job in backupJobFullState)
             {
                 BackupJobs.Add(new BackupJobViewModel(Controller, job));
             }
+            await Task.CompletedTask;
+        }
+
+        public async Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig)
+        {
+            _easySaveConfig = easySaveConfig;
+            await Task.CompletedTask;
         }
     }
 }

@@ -22,9 +22,9 @@ namespace EasySaveClient.Services
             _view = view;
         }
 
-        public async Task ConnectAsync()
+        public async Task ConnectAsync(string host, int port)
         {
-            await _client.ConnectAsync("127.0.0.1", 5000);
+            await _client.ConnectAsync(host, port);
             Console.WriteLine("Connected to server");
             _stream = _client.GetStream();
             _ = ListenForServerMessages();
@@ -32,7 +32,7 @@ namespace EasySaveClient.Services
 
         public async Task SendCommandAsync(string command, object payload)
         {
-            var message = new { command, payload };
+            var message = new { Command = command, Payload = payload };
             string json = JsonSerializer.Serialize(message);
             byte[] data = Encoding.UTF8.GetBytes(json);
             await _stream.WriteAsync(data);
@@ -60,10 +60,17 @@ namespace EasySaveClient.Services
                     {
                         case "RefreshBackupJobFullStates":
                             var backupJobFullStates = JsonSerializer.Deserialize<List<BackupJobFullState>>(response["Payload"].ToString());
-                            _view.RefreshBackupJobFullStates(backupJobFullStates);
+                            await _view.RefreshBackupJobFullStates(backupJobFullStates);
+                            break;
+                        case "RefreshEasySaveConfig":
+                            var easySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(response["Payload"].ToString());
+                            await _view.RefreshEasySaveConfig(easySaveConfig);
                             break;
                         case "DisplayMessage":
-                            _view.DisplayMessage(response["Payload"].ToString());
+                            await _view.DisplayMessage(response["Payload"].ToString());
+                            break;
+                        case "DisplayError":
+                            await _view.DisplayError(response["Payload"].ToString());
                             break;
                     }
                 }

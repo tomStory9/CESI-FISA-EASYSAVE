@@ -12,7 +12,11 @@ namespace EasySaveBusiness.Services
         private static readonly string AppDataPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EasySave");
         private static readonly string ConfigPath = Path.Combine(AppDataPath, "config.json");
         public List<BackupConfig> BackupConfigs { get; private set; } = [];
-        public EasySaveConfig EasySaveConfig { get; private set; } = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON,new List<string>());
+        public EasySaveConfig EasySaveConfig { get; private set; } = EasySaveConfig.Defaults;
+
+        public event EventHandler<BackupConfig>? BackupConfigAdded;
+        public event EventHandler<int>? BackupConfigRemoved;
+        public event EventHandler<BackupConfig>? BackupConfigEdited;
 
         public EasySaveConfigService()
         {
@@ -26,12 +30,15 @@ namespace EasySaveBusiness.Services
                 if (File.Exists(ConfigPath))
                 {
                     string json = File.ReadAllText(ConfigPath);
-                    EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json) ?? EasySaveConfig;
+                    EasySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(json, new JsonSerializerOptions
+                    {
+                        IncludeFields = true
+                    }) ?? EasySaveConfig;
                     BackupConfigs = EasySaveConfig.BackupConfigs ?? [];
                 }
                 else
                 {
-                    EasySaveConfig = new EasySaveConfig(new List<BackupConfig>(), "notepad.exe", LoggerDLL.Models.LogType.LogTypeEnum.JSON, new List<string>());
+                    EasySaveConfig = EasySaveConfig.Defaults;
                     BackupConfigs = new List<BackupConfig>();
                 }
             }
@@ -40,9 +47,10 @@ namespace EasySaveBusiness.Services
                 throw new InvalidOperationException("Failed to initialize easySave configurations.", ex);
             }
         }
+
         public void AddBackupConfig(BackupConfig config)
-        {   
-            if(BackupConfigs.Count()==5)
+        {
+            if (BackupConfigs.Count() == 5)
             {
                 throw new InvalidOperationException("You can't add more than 5 backup configs.");
             }
@@ -57,6 +65,7 @@ namespace EasySaveBusiness.Services
             }
 
             BackupConfigs.Add(config);
+            BackupConfigAdded?.Invoke(this, config);
             Save();
         }
 
@@ -73,6 +82,7 @@ namespace EasySaveBusiness.Services
             }
             BackupConfigs.Remove(existingConfig);
             BackupConfigs.Add(config);
+            BackupConfigEdited?.Invoke(this, config);
             Save();
         }
 
@@ -83,14 +93,21 @@ namespace EasySaveBusiness.Services
         }
 
         public void RemoveBackupConfig(int id)
-        {
-            var config = BackupConfigs.FirstOrDefault(bc => bc.Id == id);
+        {   
+            var config = BackupConfigs.FirstOrDefault(bc => bc.Id == id) ?? null;
             if (config == null)
             {
                 throw new KeyNotFoundException($"Backup job with ID {id} not found.");
             }
 
             BackupConfigs.Remove(config);
+            BackupConfigRemoved?.Invoke(this, id);
+            Save();
+        }
+
+        public void OverrideEasySaveConfig(EasySaveConfig config)
+        {
+            EasySaveConfig = config;
             Save();
         }
 
@@ -102,10 +119,20 @@ namespace EasySaveBusiness.Services
                 {
                     Directory.CreateDirectory(AppDataPath);
                 }
-                EasySaveConfig = new EasySaveConfig(BackupConfigs, EasySaveConfig.WorkApp, EasySaveConfig.LogType, EasySaveConfig.PriorityFileExtension);
+                EasySaveConfig = new EasySaveConfig(
+                    BackupConfigs,
+                    EasySaveConfig.WorkApp,
+                    EasySaveConfig.PriorityFileExtension,
+                    EasySaveConfig.NetworkKoLimit,
+                    EasySaveConfig.NetworkInterfaceName,
+                    EasySaveConfig.LogType,
+                    EasySaveConfig.SizeLimit,
+                    EasySaveConfig.Key
+                );
                 string json = JsonSerializer.Serialize(EasySaveConfig, new JsonSerializerOptions
                 {
-                    WriteIndented = true
+                    WriteIndented = true,
+                    IncludeFields = true
                 });
 
                 File.WriteAllText(ConfigPath, json);
