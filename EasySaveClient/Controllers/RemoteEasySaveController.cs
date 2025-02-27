@@ -45,6 +45,11 @@ namespace EasySaveClient.Controllers
             await _socketClient.SendCommandAsync("OverrideBackupConfigs", configs);
         }
 
+        public async Task OverrideEasySaveConfig(EasySaveConfig config)
+        {
+            await _socketClient.SendCommandAsync("OverrideEasySaveConfig", config);
+        }
+
         public async Task RemoveBackupConfig(int id)
         {
             await _socketClient.SendCommandAsync("RemoveBackupConfig", id);

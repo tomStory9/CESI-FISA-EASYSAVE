@@ -121,6 +121,18 @@ public class SocketServer : BackgroundService
                         _controller.StartBackupJob(id);
                     }
                     break;
+                case "PauseBackupJob":
+                    if (int.TryParse(request["Payload"]?.ToString(), out int pauseId))
+                    {
+                        _controller.PauseBackupJob(pauseId);
+                    }
+                    break;
+                case "StopBackupJob":
+                    if (int.TryParse(request["Payload"]?.ToString(), out int stopId))
+                    {
+                        _controller.StopBackupJob(stopId);
+                    }
+                    break;
                 case "AddBackupConfig":
                     var config = JsonSerializer.Deserialize<BackupConfig>(request["Payload"]?.ToString() ?? string.Empty);
                     if (config != null)
@@ -146,6 +158,13 @@ public class SocketServer : BackgroundService
                     if (configs != null)
                     {
                         _controller.OverrideBackupConfigs(configs);
+                    }
+                    break;
+                case "OverrideEasySaveConfig":
+                    var easySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(request["Payload"]?.ToString() ?? string.Empty);
+                    if (easySaveConfig != null)
+                    {
+                        _controller.OverrideEasySaveConfig(easySaveConfig);
                     }
                     break;
                 default:

@@ -19,6 +19,9 @@ namespace EasySaveBusiness.Services
         private ManualResetEvent Systemmre { get; }
         private IServiceProvider _serviceProvider { get; }
 
+        private System.Timers.Timer _backupJobFullStateBroadcastTimer;
+        private bool _shouldBroadcastBackupJobFullState;
+
         public BackupJobsService(
             EasySaveConfigService backupConfigService,
             LoggerService loggerService,
@@ -40,6 +43,10 @@ namespace EasySaveBusiness.Services
             backupConfigService.BackupConfigAdded += OnBackupConfigAdded;
             backupConfigService.BackupConfigRemoved += OnBackupConfigRemoved;
             backupConfigService.BackupConfigEdited += OnBackupConfigEdited;
+
+            _backupJobFullStateBroadcastTimer = new(100);
+            _backupJobFullStateBroadcastTimer.Elapsed += (sender, e) => BroadcastBackupJobFullStateIfNeeded();
+            _backupJobFullStateBroadcastTimer.Start();
         }
 
         private KeyValuePair<int, BackupJobService> CreateBackupJob(BackupConfig backupConfig)
@@ -52,7 +59,17 @@ namespace EasySaveBusiness.Services
 
         private void OnBackupJobFullStateChanged(object? sender, BackupJobFullState e)
         {
-            UpdateBackupJobFullStates();
+            Console.WriteLine($"Backup job full state changed to {e.State}");
+            _shouldBroadcastBackupJobFullState = true;
+        }
+
+        private void BroadcastBackupJobFullStateIfNeeded()
+        {
+            if (_shouldBroadcastBackupJobFullState)
+            {
+                UpdateBackupJobFullStates();
+                _shouldBroadcastBackupJobFullState = false;
+            }
         }
 
         private void OnBackupConfigAdded(object? sender, BackupConfig config)

@@ -62,6 +62,10 @@ namespace EasySaveClient.Services
                             var backupJobFullStates = JsonSerializer.Deserialize<List<BackupJobFullState>>(response["Payload"].ToString());
                             await _view.RefreshBackupJobFullStates(backupJobFullStates);
                             break;
+                        case "RefreshEasySaveConfig":
+                            var easySaveConfig = JsonSerializer.Deserialize<EasySaveConfig>(response["Payload"].ToString());
+                            await _view.RefreshEasySaveConfig(easySaveConfig);
+                            break;
                         case "DisplayMessage":
                             await _view.DisplayMessage(response["Payload"].ToString());
                             break;

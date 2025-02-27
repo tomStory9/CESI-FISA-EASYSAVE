@@ -110,5 +110,11 @@ namespace EasySaveDesktop.ViewModels
             }
             await Task.CompletedTask;
         }
+
+        public async Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig)
+        {
+            await Task.CompletedTask;
+            // throw new System.NotImplementedException();
+        }
     }
 }

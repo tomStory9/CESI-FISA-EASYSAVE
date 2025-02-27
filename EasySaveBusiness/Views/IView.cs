@@ -15,6 +15,7 @@ namespace EasySaveBusiness.Views
 
         public Task Init();
         public Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig);
+        public Task RefreshBackupJobFullStates(List<BackupJobFullState> backupJobFullStates);
         public Task DisplayMessage(string message);
         public Task DisplayError(string errorMessage);
     }

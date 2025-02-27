@@ -31,6 +31,12 @@ namespace EasySaveServer.Views
             await Task.CompletedTask;
         }
 
+        public async Task RefreshEasySaveConfig(EasySaveConfig easySaveConfig)
+        {
+            _server.BroadcastEvent("RefreshEasySaveConfig", easySaveConfig);
+            await Task.CompletedTask;
+        }
+
         public async Task DisplayMessage(string message)
         {
             _server.BroadcastEvent("DisplayMessage", message);
