@@ -93,8 +93,8 @@ namespace EasySaveBusiness.Services
         }
 
         public void RemoveBackupConfig(int id)
-        {
-            var config = BackupConfigs.First(bc => bc.Id == id);
+        {   
+            var config = BackupConfigs.FirstOrDefault(bc => bc.Id == id) ?? null;
             if (config == null)
             {
                 throw new KeyNotFoundException($"Backup job with ID {id} not found.");

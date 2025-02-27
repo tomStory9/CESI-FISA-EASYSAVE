@@ -35,7 +35,9 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
+
             };
 
             // Act
@@ -56,7 +58,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             _service.AddBackupConfig(config);
 
@@ -75,7 +78,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             _service.AddBackupConfig(config);
 
@@ -104,7 +108,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             _service.AddBackupConfig(config);
 

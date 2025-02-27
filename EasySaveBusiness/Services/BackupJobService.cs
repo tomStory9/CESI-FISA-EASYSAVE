@@ -17,7 +17,6 @@ namespace EasySaveBusiness.Services
         private BackupConfig BackupConfig { get; set; }
         private EasySaveConfig EasySaveConfig { get; }
         private FileProcessingService FileProcessingService { get; }
-        private WorkAppMonitorService WorkAppMonitorService { get; }
         private IsNetworkUsageExceededService _isNetworkUsageExceedService { get; }
         private IsRunningWorkAppService _isRunningWorkAppService { get; }
         private SortBackupFileService SortBackupFileService { get; }
@@ -40,7 +39,6 @@ namespace EasySaveBusiness.Services
             LoggerService loggerService,
             EasySaveConfigService easySaveConfigService,
             FileProcessingService fileProcessingService,
-            WorkAppMonitorService workAppMonitorService,
             SortBackupFileService sortBackupFileService,
             IsRunningWorkAppService isRunningWorkAppService,
             IsNetworkUsageExceededService isNetworkUsageExceedService,
@@ -51,7 +49,6 @@ namespace EasySaveBusiness.Services
             LoggerService = loggerService;
             EasySaveConfig = easySaveConfigService.EasySaveConfig;
             FileProcessingService = fileProcessingService;
-            WorkAppMonitorService = workAppMonitorService;
             SortBackupFileService = sortBackupFileService;
             _isRunningWorkAppService = isRunningWorkAppService;
             _isNetworkUsageExceedService = isNetworkUsageExceedService;

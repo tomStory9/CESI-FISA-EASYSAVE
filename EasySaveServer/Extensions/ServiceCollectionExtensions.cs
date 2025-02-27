@@ -32,7 +32,6 @@ namespace EasySaveServer.Extensions
                 provider.GetRequiredService<LoggerService>(),
                 provider.GetRequiredService<EasySaveConfigService>(),
                 provider.GetRequiredService<FileProcessingService>(),
-                provider.GetRequiredService<WorkAppMonitorService>(),
                 provider.GetRequiredService<SortBackupFileService>(),
                 provider.GetRequiredService<IsRunningWorkAppService>(),
                 provider.GetRequiredService<IsNetworkUsageExceededService>(),

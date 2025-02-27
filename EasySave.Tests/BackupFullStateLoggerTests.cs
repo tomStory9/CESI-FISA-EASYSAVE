@@ -23,7 +23,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             var state = BackupJobFullState.FromBackupConfig(backupConfig) with
             {
@@ -66,7 +67,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = "C:/Source",
                 TargetDirectory = "D:/Target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             var initialState = BackupJobFullState.FromBackupConfig(initialBackupConfig) with
             {
@@ -87,7 +89,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup2",
                 SourceDirectory = "C:/Source2",
                 TargetDirectory = "D:/Target2",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             var newState = BackupJobFullState.FromBackupConfig(newBackupConfig) with
             {

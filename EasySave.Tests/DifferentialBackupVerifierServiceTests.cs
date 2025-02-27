@@ -19,7 +19,8 @@ namespace EasySaveBusiness.Tests
                 Name = "TestBackup",
                 SourceDirectory = "/source",
                 TargetDirectory = "/target",
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             string file1 = "testfile1.txt";
             string file2 = "testfile2.txt";
@@ -50,7 +51,8 @@ namespace EasySaveBusiness.Tests
                 Name = "TestBackup",
                 SourceDirectory = "/source",
                 TargetDirectory = "/target",
-                Type = BackupType.Differential
+                Type = BackupType.Differential,
+                Encrypted = false
             };
             string file1 = "testfile1.txt";
             string file2 = "testfile2.txt";
@@ -81,7 +83,8 @@ namespace EasySaveBusiness.Tests
                 Name = "TestBackup",
                 SourceDirectory = "/source",
                 TargetDirectory = "/target",
-                Type = BackupType.Differential
+                Type = BackupType.Differential,
+                Encrypted = false
             };
             string file1 = "testfile1.txt";
             string file2 = "testfile2.txt";
@@ -112,7 +115,8 @@ namespace EasySaveBusiness.Tests
                 Name = "TestBackup",
                 SourceDirectory = "/source",
                 TargetDirectory = "/target",
-                Type = BackupType.Differential
+                Type = BackupType.Differential,
+                Encrypted = false
             };
             string file1 = "testfile1.txt";
             string file2 = "nonexistentfile.txt";

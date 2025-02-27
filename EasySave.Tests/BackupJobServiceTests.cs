@@ -21,8 +21,11 @@ namespace EasySaveBusiness.Tests
         private readonly WorkAppMonitorService _workAppMonitorService;
         private readonly IsNetworkUsageExceededService _isNetworkUsageExceeded;
         private readonly SortBackupFileService _sortBackupFileService;
+        private readonly IsRunningWorkAppService _isRunningWorkAppService;
+        private readonly EasySaveConfigService _easySaveBackupConfig;
         private readonly string _logFilePath = Path.Combine(Path.GetTempPath(), "backup_full_state_log.json");
         private readonly string _workApp = "notepad.exe";
+
 
         public BackupJobServiceTests()
         {
@@ -33,22 +36,27 @@ namespace EasySaveBusiness.Tests
 
             _loggerService = new LoggerService(_logFilePath, LoggerDLL.Models.LogType.LogTypeEnum.JSON);
             _differentialBackupVerifierService = new DifferentialBackupVerifierService();
-            _workAppMonitorService = new WorkAppMonitorService(_workApp);
+            ManualResetEvent systemMre = new ManualResetEvent(false);
+            _workAppMonitorService = new WorkAppMonitorService(_workApp,systemMre);
+            _isRunningWorkAppService = new IsRunningWorkAppService();
             _isNetworkUsageExceeded = new IsNetworkUsageExceededService();
             _sortBackupFileService = new SortBackupFileService();
+            _easySaveBackupConfig = new EasySaveConfigService();
             var backupConfig = new BackupConfig
             {
                 Id = 1,
                 Name = "Backup1",
                 SourceDirectory = _sourceDirectory,
                 TargetDirectory = _targetDirectory,
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
 
-            var easySaveConfig = new EasySaveConfig(new List<BackupConfig> { backupConfig }, _workApp, LoggerDLL.Models.LogType.LogTypeEnum.JSON, new List<string>(), 1024, "eth0", 1024 * 1024 * 5);
+            var easySaveConfig = new EasySaveConfig(new List<BackupConfig> { backupConfig }, _workApp, new List<string>(), 1024, "eth0", LoggerDLL.Models.LogType.LogTypeEnum.JSON, 1024 * 1024 * 5,null);
             ManualResetEvent manualResetEvent = new ManualResetEvent(false);
-            _backupJobService = new BackupJobService(_loggerService, backupConfig, easySaveConfig, _fileProcessingService, _workAppMonitorService, manualResetEvent);
-            _fileProcessingService = new FileProcessingService(_loggerService, _differentialBackupVerifierService, _backupJobService);
+            _fileProcessingService = new FileProcessingService(_loggerService, _differentialBackupVerifierService);
+            _backupJobService = new BackupJobService(_loggerService, _easySaveBackupConfig, _fileProcessingService, _sortBackupFileService,_isRunningWorkAppService,_isNetworkUsageExceeded,systemMre);
+            _backupJobService.Init(backupConfig);
         }
 
 
@@ -71,7 +79,8 @@ namespace EasySaveBusiness.Tests
                 Name = "Backup1",
                 SourceDirectory = _sourceDirectory,
                 TargetDirectory = _targetDirectory,
-                Type = BackupType.Full
+                Type = BackupType.Full,
+                Encrypted = false
             };
             var filePath1 = Path.Combine(_sourceDirectory, "file1.txt");
             var filePath2 = Path.Combine(_sourceDirectory, "file2.txt");
