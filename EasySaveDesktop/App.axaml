@@ -1,0 +1,25 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="EasySaveDesktop.App"
+             xmlns:local="using:EasySaveDesktop"
+			 xmlns:themes="clr-namespace:Material.Styles.Themes;assembly=Material.Styles"
+			 xmlns:materialIcons="clr-namespace:Material.Icons.Avalonia;assembly=Material.Icons.Avalonia"
+			 xmlns:dialogHostAvalonia="clr-namespace:DialogHostAvalonia;assembly=DialogHost.Avalonia"
+			 xmlns:converters="clr-namespace:EasySaveDesktop.Converters"
+             RequestedThemeVariant="Default">
+             <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
+
+    <Application.DataTemplates>
+        <local:ViewLocator/>
+    </Application.DataTemplates>
+
+	<Application.Resources>
+		<converters:BackupConfigWizardStepToViewConverter x:Key="BackupConfigWizardStepToViewConverter" />
+	</Application.Resources>
+  
+    <Application.Styles>
+		<themes:MaterialTheme BaseTheme="Dark" PrimaryColor="Purple" SecondaryColor="Lime" />
+		<materialIcons:MaterialIconStyles />
+		<dialogHostAvalonia:DialogHostStyles />
+    </Application.Styles>
+</Application>

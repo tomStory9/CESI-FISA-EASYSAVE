@@ -93,10 +93,10 @@ namespace EasySaveBusiness.Services
             switch ()
             {
                 default:
-                    Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
+            Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
                     break;
-            }
-            
+        }
+
         }
 
         public void Pause()
