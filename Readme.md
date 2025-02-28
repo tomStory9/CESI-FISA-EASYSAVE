@@ -17,7 +17,7 @@ EasySave is a software designed to facilitate file and directory backups. This g
 
 ### Graphical Version:
 1. Simply launch **EasySave Desktop** from the Start menu or File Explorer.
-
+![backuplist](./img/backupList.jpg)
 ---
 
 ## Using the Console Version
@@ -68,7 +68,7 @@ EasySave is a software designed to facilitate file and directory backups. This g
 ## Backup Server Configuration
 If the backup server is hosted on the same PC, keep the default IP address **127.0.0.1**.
 Otherwise, specify the IP address of the remote server and the corresponding port (**4201** by default).
-
+ ![connexion](./img/connexion.jpg)
 ---
 
 ## Credits

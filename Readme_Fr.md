@@ -17,7 +17,7 @@ EasySave est un logiciel conçu pour faciliter la sauvegarde de fichiers et de r
 
 ### Version Graphique :
 1. Lancez simplement **EasySave Desktop** depuis le menu Démarrer ou l'Explorateur de fichiers.
-
+![backuplist](./img/backupList.jpg)
 ---
 
 ## Utilisation de la Version Console
@@ -68,7 +68,7 @@ EasySave est un logiciel conçu pour faciliter la sauvegarde de fichiers et de r
 ## Configuration du Serveur de Backup
 Si le serveur de backup est hébergé sur le même PC, laissez l'adresse IP par défaut **127.0.0.1**.
 Sinon, indiquez l'adresse IP du serveur distant ainsi que le port correspondant (**4201** par défaut).
-
+    ![connexion](./img/connexion.jpg)
 ---
 
 ## Crédits
