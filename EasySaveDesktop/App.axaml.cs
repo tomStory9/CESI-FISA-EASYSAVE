@@ -9,6 +9,7 @@ using EasySaveDesktop.Views;
 using Microsoft.Extensions.DependencyInjection;
 using EasySaveDesktop.Extensions;
 using EasySaveBusiness.Controllers;
+using System.Globalization;
 
 namespace EasySaveDesktop;
 
@@ -21,7 +22,8 @@ public partial class App : Application
 
     public override void OnFrameworkInitializationCompleted()
     {
-        // Register all the services needed for the application to run
+        Assets.Resources.Culture = CultureInfo.InvariantCulture;
+
         var collection = new ServiceCollection();
         collection.AddCommonServices();
 

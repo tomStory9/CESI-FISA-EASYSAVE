@@ -45,7 +45,7 @@ public class SocketServer : BackgroundService
     private async Task HandleClientAsync(TcpClient client, CancellationToken cancellationToken)
     {
         using var stream = client.GetStream();
-        var buffer = new byte[1024];
+        var buffer = new byte[1024 * 512];
 
         Console.WriteLine("New client");
 
@@ -116,9 +116,15 @@ public class SocketServer : BackgroundService
                     _controller.Init();
                     break;
                 case "StartBackupJob":
-                    if (int.TryParse(request["Payload"]?.ToString(), out int id))
+                    if (int.TryParse(request["Payload"]?.ToString(), out int idStart))
                     {
-                        _controller.StartBackupJob(id);
+                        _controller.StartBackupJob(idStart);
+                    }
+                    break;
+                case "RestoreBackupJob":
+                    if (int.TryParse(request["Payload"]?.ToString(), out int idRestore))
+                    {
+                        _controller.RestoreBackupJob(idRestore);
                     }
                     break;
                 case "PauseBackupJob":

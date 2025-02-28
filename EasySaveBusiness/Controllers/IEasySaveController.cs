@@ -25,7 +25,9 @@ namespace EasySaveBusiness.Controllers
 
         public Task RemoveBackupConfig(int id);
 
-        public Task StartBackupJob(int id , BackupJobRequest request);
+        public Task StartBackupJob(int id);
+
+        public Task RestoreBackupJob(int id);
 
         public Task PauseBackupJob(int id);
 

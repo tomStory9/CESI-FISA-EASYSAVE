@@ -59,6 +59,10 @@ namespace EasySaveClient.Controllers
         {
             await _socketClient.SendCommandAsync("StartBackupJob", id);
         }
+        public async Task RestoreBackupJob(int id)
+        {
+            await _socketClient.SendCommandAsync("RestoreBackupJob", id);
+        }
 
         public async Task PauseBackupJob(int id)
         {

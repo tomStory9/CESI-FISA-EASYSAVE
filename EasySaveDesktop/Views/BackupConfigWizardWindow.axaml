@@ -3,16 +3,18 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:vm="clr-namespace:EasySaveDesktop.ViewModels"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="300"
+		Width="800" Height="300"
         x:Class="EasySaveDesktop.BackupConfigWizardWindow"
 		x:DataType="vm:BackupConfigWizardViewModel"
-        Title="BackupConfigWizardWindow">
-	<Grid>
+		x:Name="ConfigWizardWindow"
+        Title="Config Wizard">
+	<StackPanel Orientation="Vertical">
 		<ContentControl Content="{Binding CurrentStep, Converter={StaticResource BackupConfigWizardStepToViewConverter}}" />
-		<StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+		<StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
 			<Button Content="Précédent" Command="{Binding PreviousCommand}" IsEnabled="{Binding IsPreviousEnabled}" />
 			<Button Content="Suivant" Command="{Binding NextCommand}" IsEnabled="{Binding IsNextEnabled}" />
-			<Button Content="Terminer" Command="{Binding FinishCommand}" IsEnabled="{Binding IsFinishEnabled}" />
+			<Button Content="Terminer" Command="{Binding FinishCommand}" CommandParameter="{Binding ElementName=ConfigWizardWindow}" IsEnabled="{Binding IsFinishEnabled}" />
 		</StackPanel>
-	</Grid>
+	</StackPanel>
 </Window>

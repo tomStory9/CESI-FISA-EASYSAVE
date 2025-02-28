@@ -81,11 +81,17 @@ namespace EasySaveBusiness.Controllers
             await RefreshEasySaveConfig();
         }
 
-        public async Task StartBackupJob(int id,BackupJobRequest request)
+        public async Task StartBackupJob(int id)
         {
-            _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Start(request);
+            _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Start();
             await Task.CompletedTask;
         }
+        public async Task RestoreBackupJob(int id)
+        {
+            _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Restore();
+            await Task.CompletedTask;
+        }
+
         public async Task PauseBackupJob(int id)
         {
             _backupJobsService.BackupJobs.First(job => job.Key == id).Value.Pause();

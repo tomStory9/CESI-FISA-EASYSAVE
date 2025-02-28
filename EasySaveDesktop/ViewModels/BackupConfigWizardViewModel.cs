@@ -1,4 +1,5 @@
 ﻿using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -19,8 +20,6 @@ namespace EasySaveDesktop.ViewModels
 {
     public partial class BackupConfigWizardViewModel : ViewModelBase
     {
-        public event EventHandler? BackupConfigCompleted;
-
         private readonly IEasySaveController _controller;
 
         [ObservableProperty]
@@ -83,7 +82,7 @@ namespace EasySaveDesktop.ViewModels
         }
 
         [RelayCommand]
-        private async Task Finish()
+        private async Task Finish(Window window)
         {
             var config = new BackupConfig
             {
@@ -96,7 +95,7 @@ namespace EasySaveDesktop.ViewModels
 
             await _controller.AddBackupConfig(config);
 
-            BackupConfigCompleted?.Invoke(this, EventArgs.Empty);
+            window.Close();
         }
         private void UpdateButtonStates()
         {

@@ -64,9 +64,16 @@ namespace EasySaveDesktop.ViewModels
         }
 
         [RelayCommand]
-        private void StartAll()
+        private async Task StartAll()
         {
-            Console.WriteLine("Start all");
+            for (int i = 0; i < BackupJobs.Count; i++)
+            {
+                BackupJobViewModel item = BackupJobs[i];
+                if (item.IsChecked)
+                {
+                    await Controller.StartBackupJob(item.Id);
+                }
+            }
         }
 
         [RelayCommand]
