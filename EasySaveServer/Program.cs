@@ -4,7 +4,16 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 
-var host = Host.CreateDefaultBuilder(args)
+
+using System.Reflection;
+var appName = Assembly.GetEntryAssembly().GetName().Name;
+var notAlreadyRunning = true;
+using (var mutex = new Mutex(true, appName + "Singleton", out notAlreadyRunning))
+{
+    if (notAlreadyRunning)
+    {
+
+        var host = Host.CreateDefaultBuilder(args)
     .UseWindowsService()
     .ConfigureServices(services =>
     {
@@ -19,4 +28,9 @@ var host = Host.CreateDefaultBuilder(args)
     })
     .Build();
 
-await host.RunAsync();
+        await host.RunAsync();
+
+    }
+    else
+        Console.Error.WriteLine(appName + " is already running.");
+}
