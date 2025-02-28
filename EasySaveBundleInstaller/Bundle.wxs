@@ -1,0 +1,14 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal">
+  <Bundle Name="EasySaveBundleInstaller" Manufacturer="EasySaveCorp" Version="3.0.0" UpgradeCode="6b245d4b-129d-4c2b-851b-f736313cabfe">
+    <BootstrapperApplication>
+      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
+    </BootstrapperApplication>
+
+    <Chain>
+      <MsiPackage SourceFile="$(var.EasySaveServerInstaller.TargetDir)EasySaveServerInstaller.msi" />
+	  <MsiPackage SourceFile="$(var.EasySaveConsoleInstaller.TargetDir)EasySaveConsoleInstaller.msi" />
+	  <MsiPackage SourceFile="$(var.EasySaveDesktopInstaller.TargetDir)EasySaveDesktopInstaller.msi" />
+    </Chain>
+
+  </Bundle>
+</Wix>

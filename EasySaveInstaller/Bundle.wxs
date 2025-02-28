@@ -1,0 +1,14 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Bundle Name="EasySaveBundle" Manufacturer="Simon Ledoux, Tom Raineri, Lucas Guichemerre" Version="3.0.0" UpgradeCode="458efc4d-2b84-47df-a92c-b7d241df58e6">
+    <!--<BootstrapperApplication Name="EasySave">
+      <bal:WixStandardBootstrapperApplication LicenseUrl="https://www.example.com/license" Theme="hyperlinkLicense" />
+    </BootstrapperApplication>-->
+
+    <Chain>
+      <MsiPackage SourceFile="EasySave.msi"
+                  Vital="yes"
+                  Compressed="yes"
+                  Permanent="no" />
+    </Chain>
+  </Bundle>
+</Wix>

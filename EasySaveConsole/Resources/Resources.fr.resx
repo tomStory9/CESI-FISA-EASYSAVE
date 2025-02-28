@@ -174,6 +174,9 @@
   <data name="Type" xml:space="preserve">
     <value>Type</value>
   </data>
+  <data name="InvalidBackupArguments  " xml:space="preserve">
+    <value>Nombre d'arguments incorrect</value>
+  </data>
   <data name="InvalidBackupType" xml:space="preserve">
     <value>Type de sauvegarde invalide: {0}.Valeurs possibles : {1}</value>
   </data>
@@ -192,7 +195,16 @@
   <data name="Error" xml:space="preserve">
     <value>Erreur</value>
   </data>
-  <data name="InvalidBackupArguments  " xml:space="preserve">
-    <value>Nombre d'arguments incorrect</value>
+  <data name="InvalidArguments" xml:space="preserve">
+    <value>Arguments invalides</value>
+  </data>
+  <data name="InvalidServerInfo" xml:space="preserve">
+    <value>Information du serveur invalide</value>
+  </data>
+  <data name="InvalidEncryptionFlag" xml:space="preserve">
+    <value>Champ de chiffrement invalide(valeurs possibles: true/false)</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>Chiffré</value>
   </data>
 </root>

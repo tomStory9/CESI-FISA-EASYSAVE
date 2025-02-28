@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "EasySaveDesktop" ?>
+<?define Manufacturer = "EasySaveCorp" ?>
+<?define Version = "3.0.0" ?>
+<?define UpgradeCode = "9ED3FF33-8718-444E-B44B-69A2344B7E98" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall">
+	<Package Name="$(Name)"
+             Manufacturer="$(Manufacturer)"
+             Version="$(Version)"
+             UpgradeCode="$(var.UpgradeCode)"
+             Compressed="true">
+
+		<!-- Allow upgrades and prevent downgrades -->
+		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+		<DirectoryRef Id="INSTALLFOLDER">
+			<Component Id="DesktopExe" Bitness="always64" Guid="9f3834c6-1123-4034-a4f4-e6a6ace6af12">
+				<File Id="EasySaveDesktop.Binaries.EasySaveDesktop.exe" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveDesktop.exe" />
+				<Shortcut Name="EasySave Desktop" Directory="DesktopFolder"
+                      Advertise="yes" WorkingDirectory="INSTALLFOLDER" />
+
+				<Shortcut Name="EasySave Desktop" Directory="ProgramMenuFolder"
+						  Advertise="yes" WorkingDirectory="INSTALLFOLDER" />
+			</Component>
+			<Component Id="DesktopDlls1" Bitness="always64" Guid="9f3834c6-1123-4034-a4f4-e6a6ace6af13">
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Base.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Base.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Controls.DataGrid.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Controls.DataGrid.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Controls.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Controls.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.DesignerSupport.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.DesignerSupport.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Desktop.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Desktop.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Dialogs.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Dialogs.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Fonts.Inter.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Fonts.Inter.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.FreeDesktop.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.FreeDesktop.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Markup.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Markup.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Markup.Xaml.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Markup.Xaml.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Metal.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Metal.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.MicroCom.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.MicroCom.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Native.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Native.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.OpenGL.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.OpenGL.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Remote.Protocol.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Remote.Protocol.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Skia.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Skia.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Themes.Fluent.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Themes.Fluent.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Vulkan.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Vulkan.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.Win32.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.Win32.dll" />
+				<File Id="EasySaveDesktop.Binaries.Avalonia.X11.dll" Source="$(var.EasySaveDesktop.TargetDir)\Avalonia.X11.dll" />
+				<File Id="EasySaveDesktop.Binaries.CommunityToolkit.Mvvm.dll" Source="$(var.EasySaveDesktop.TargetDir)\CommunityToolkit.Mvvm.dll" />
+				<File Id="EasySaveDesktop.Binaries.DialogHost.Avalonia.dll" Source="$(var.EasySaveDesktop.TargetDir)\DialogHost.Avalonia.dll" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveBusiness.dll" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveBusiness.dll" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveBusiness.pdb" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveBusiness.pdb" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveClient.dll" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveClient.dll" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveClient.pdb" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveClient.pdb" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveDesktop.deps.json" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveDesktop.deps.json" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveDesktop.dll" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveDesktop.dll" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveDesktop.pdb" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveDesktop.pdb" />
+				<File Id="EasySaveDesktop.Binaries.EasySaveDesktop.runtimeconfig.json" Source="$(var.EasySaveDesktop.TargetDir)\EasySaveDesktop.runtimeconfig.json" />
+				<File Id="EasySaveDesktop.Binaries.HarfBuzzSharp.dll" Source="$(var.EasySaveDesktop.TargetDir)\HarfBuzzSharp.dll" />
+				<File Id="EasySaveDesktop.Binaries.LoggerDLL.dll" Source="$(var.EasySaveDesktop.TargetDir)\LoggerDLL.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Avalonia.DataGrid.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Avalonia.DataGrid.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Avalonia.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Avalonia.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Colors.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Colors.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Icons.Avalonia.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Icons.Avalonia.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Icons.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Icons.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Ripple.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Ripple.dll" />
+				<File Id="EasySaveDesktop.Binaries.Material.Styles.dll" Source="$(var.EasySaveDesktop.TargetDir)\Material.Styles.dll" />
+				<File Id="EasySaveDesktop.Binaries.MicroCom.Runtime.dll" Source="$(var.EasySaveDesktop.TargetDir)\MicroCom.Runtime.dll" />
+				<File Id="EasySaveDesktop.Binaries.DependencyInjection.Abstractions.dll" Source="$(var.EasySaveDesktop.TargetDir)\Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+				<File Id="EasySaveDesktop.Binaries.DependencyInjection.dll" Source="$(var.EasySaveDesktop.TargetDir)\Microsoft.Extensions.DependencyInjection.dll" />
+				<File Id="EasySaveDesktop.Binaries.SkiaSharp.dll" Source="$(var.EasySaveDesktop.TargetDir)\SkiaSharp.dll" />
+				<File Id="EasySaveDesktop.Binaries.System.IO.Pipelines.dll" Source="$(var.EasySaveDesktop.TargetDir)\System.IO.Pipelines.dll" />
+				<File Id="EasySaveDesktop.Binaries.Tmds.DBus.Protocol.dll" Source="$(var.EasySaveDesktop.TargetDir)\Tmds.DBus.Protocol.dll" />
+			</Component>
+			<Component Id="DesktopRuntimesWinX64" Bitness="always64" Guid="9f3834c6-1123-4034-a4f4-e6a6ace6af17">
+				<File Id="EasySaveDesktop.Binaries.runtimes.win.x64.native.av_libglesv2.dll" Source="$(var.EasySaveDesktop.TargetDir)\runtimes\win-x64\native\av_libglesv2.dll" />
+				<File Id="EasySaveDesktop.Binaries.runtimes.win.x64.native.libHarfBuzzSharp.dll" Source="$(var.EasySaveDesktop.TargetDir)\runtimes\win-x64\native\libHarfBuzzSharp.dll" />
+				<File Id="EasySaveDesktop.Binaries.runtimes.win.x64.native.libSkiaSharp.dll" Source="$(var.EasySaveDesktop.TargetDir)\runtimes\win-x64\native\libSkiaSharp.dll" />
+			</Component>
+		</DirectoryRef>
+	</Package>
+</Wix>

@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "EasySaveConsole" ?>
+<?define Manufacturer = "EasySaveCorp" ?>
+<?define Version = "3.0.0" ?>
+<?define UpgradeCode = "9ED3FF33-8718-444E-B44B-69A2344B7E98" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall">
+	<Package Name="$(Name)"
+             Manufacturer="$(Manufacturer)"
+             Version="$(Version)"
+             UpgradeCode="$(var.UpgradeCode)"
+             Compressed="true">
+
+		<!-- Allow upgrades and prevent downgrades -->
+		<MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+		<DirectoryRef Id="INSTALLFOLDER">
+
+			<Component Id="ConsoleExecutable" Bitness="always64" Guid="2702fc2d-137f-454b-aeba-8b6161e0ab89">
+				<Environment 
+				  Id="PATH" 
+				  Name="PATH" 
+				  Value="[INSTALLFOLDER]" 
+				  Permanent="yes" 
+				  Part="last" 
+				  Action="set" 
+				  System="yes" />				
+
+				<File Id="EasySaveConsole.exe"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveConsole.exe"
+                      KeyPath="true" />
+				<File Id="EasySaveConsole.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveConsole.dll" />
+				<File Id="EasySaveConsole.pdb"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveConsole.pdb" />
+				<File Id="EasySaveConsole.deps.json"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveConsole.deps.json" />
+				<File Id="EasySaveConsole.runtimeconfig.json"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveConsole.runtimeconfig.json" />
+				<File Id="EasySaveBusiness.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveBusiness.dll" />
+				<File Id="EasySaveBusiness.pdb"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveBusiness.pdb" />
+				<File Id="EasySaveClient.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveClient.dll" />
+				<File Id="EasySaveClient.pdb"
+                      Source="$(var.EasySaveConsole.TargetDir)EasySaveClient.pdb" />
+				<File Id="LoggerDLL.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)LoggerDLL.dll" />
+				<File Id="Microsoft.Extensions.DependencyInjection.Abstractions.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.DependencyInjection.Abstractions.dll" />
+				<File Id="Microsoft.Extensions.DependencyInjection.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.DependencyInjection.dll" />
+				<File Id="Microsoft.Extensions.Localization.Abstractions.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.Localization.Abstractions.dll" />
+				<File Id="Microsoft.Extensions.Localization.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.Localization.dll" />
+				<File Id="Microsoft.Extensions.Logging.Abstractions.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.Logging.Abstractions.dll" />
+				<File Id="Microsoft.Extensions.Options.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.Options.dll" />
+				<File Id="Microsoft.Extensions.Primitives.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)Microsoft.Extensions.Primitives.dll" />
+				<File Id="NeoSmart.PrettySize.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)NeoSmart.PrettySize.dll" />
+				<File Id="System.Diagnostics.DiagnosticSource.dll"
+                      Source="$(var.EasySaveConsole.TargetDir)System.Diagnostics.DiagnosticSource.dll" />
+				<File Id="EasySaveConsole.resources.dll"
+         Source="$(var.EasySaveConsole.TargetDir)fr\EasySaveConsole.resources.dll" />
+			</Component>
+		</DirectoryRef>
+
+	</Package>
+</Wix>

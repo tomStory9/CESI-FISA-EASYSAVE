@@ -59,7 +59,6 @@ namespace EasySaveBusiness.Services
 
         private void OnBackupJobFullStateChanged(object? sender, BackupJobFullState e)
         {
-            Console.WriteLine($"Backup job full state changed to {e.State}");
             _shouldBroadcastBackupJobFullState = true;
         }
 
