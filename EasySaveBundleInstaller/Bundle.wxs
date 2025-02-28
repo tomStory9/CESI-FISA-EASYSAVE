@@ -8,6 +8,7 @@
       <MsiPackage SourceFile="$(var.EasySaveServerInstaller.TargetDir)EasySaveServerInstaller.msi" />
 	  <MsiPackage SourceFile="$(var.EasySaveConsoleInstaller.TargetDir)EasySaveConsoleInstaller.msi" />
 	  <MsiPackage SourceFile="$(var.EasySaveDesktopInstaller.TargetDir)EasySaveDesktopInstaller.msi" />
+	  <MsiPackage SourceFile="$(var.CryptoSoftInstaller.TargetDir)CryptoSoftInstaller.msi" />
     </Chain>
 
   </Bundle>

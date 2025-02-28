@@ -1,0 +1,6 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+	<ItemGroup>
+		<ProjectReference Include="..\CryptoSoft\CryptoSoft.csproj" />
+	</ItemGroup>
+	<Target Name="CollectSuggestedVisualStudioComponentIds" />
+</Project>

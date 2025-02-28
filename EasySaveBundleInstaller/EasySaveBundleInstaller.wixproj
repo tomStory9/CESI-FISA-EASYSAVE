@@ -12,6 +12,9 @@
     <ProjectReference Include="..\EasySaveDesktopInstaller\EasySaveDesktopInstaller.wixproj" />
   </ItemGroup>
   <ItemGroup>
+	<ProjectReference Include="..\CryptoSoftInstaller\CryptoSoftInstaller.wixproj" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.2" />
   </ItemGroup>
   <Target Name="CollectSuggestedVisualStudioComponentIds" />
