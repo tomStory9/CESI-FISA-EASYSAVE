@@ -1,0 +1,3 @@
+[submodule "CryptoSoft"]
+	path = CryptoSoft
+	url = git@github.com:tomStory9/CryptoSoft.git
