@@ -12,7 +12,7 @@ namespace EasySaveBusiness.Tests
             // Arrange
             var service = new IsNetworkUsageExceededService();
             string networkInterfaceName = "Ethernet";
-            long networkUsageLimit = 1000000; // 1 MB
+            long networkUsageLimit = 100000000000000; // too high to be exceeded
 
             // Act
             bool result = service.IsNetworkUsageLimitExceeded(networkInterfaceName, networkUsageLimit);

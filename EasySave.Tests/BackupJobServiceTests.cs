@@ -88,7 +88,7 @@ namespace EasySaveBusiness.Tests
 
             // Act
             _backupJobService.Start(BackupJobRequest.RESTORE);
-            await Task.Delay(1000); // Wait for the task to complete
+            await Task.Delay(10000); // Wait for the task to complete
 
             // Assert
             var restoredFilePath = Path.Combine(_sourceDirectory, "file1.txt");

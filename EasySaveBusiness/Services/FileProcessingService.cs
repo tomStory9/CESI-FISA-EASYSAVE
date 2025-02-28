@@ -20,10 +20,10 @@ public class FileProcessingService
     }
     public async Task ProcessEncryptedFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, ManualResetEventSlim lockEvent, object lockObject, string encryptionKey)
     {
-        string relativePath = Path.GetRelativePath(backupConfig.SourceDirectory, file);
+        string relativePath = Path.GetFileName(file);
         string destinationFile = Path.Combine(backupConfig.TargetDirectory, relativePath);
-        string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
-        if (!Directory.Exists(destinationDir))
+        string destinationDir = Path.GetDirectoryName(backupConfig.TargetDirectory) ?? string.Empty;
+        if (!Directory.Exists(backupConfig.TargetDirectory))
         {
             Directory.CreateDirectory(destinationDir);
         }
@@ -32,7 +32,7 @@ public class FileProcessingService
 
         if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig, file, destinationFile))
         {
-            string cryptosoftCommand = $"CryptoSoft encrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
+            string cryptosoftCommand = $"CryptoSoft encrypt \"{file}\" \"{backupConfig.TargetDirectory}\" \"{encryptionKey}\"";
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
@@ -82,9 +82,10 @@ public class FileProcessingService
     }
     public async Task RestoreEncryptedFileAsync(BackupConfig backupConfig, string file, int completedFiles, long completedSize, long totalFiles, long totalFilesSize, ManualResetEventSlim lockEvent, object lockObject, string encryptionKey)
     {
-        string relativePath = Path.GetRelativePath(backupConfig.TargetDirectory, file);
+        string relativePath = Path.GetFileName(file);
+        relativePath = relativePath.Replace(".encrypted", "");
         string destinationFile = Path.Combine(backupConfig.SourceDirectory, relativePath);
-        string destinationDir = Path.GetDirectoryName(destinationFile) ?? string.Empty;
+        string destinationDir = Path.GetDirectoryName(backupConfig.SourceDirectory) ?? string.Empty;
         if (!Directory.Exists(destinationDir))
         {
             Directory.CreateDirectory(destinationDir);
@@ -94,7 +95,7 @@ public class FileProcessingService
 
         if (_differentialBackupVerifierService.VerifyDifferentialBackupAndShaDifference(backupConfig, file, destinationFile))
         {
-            string cryptosoftCommand = $"CryptoSoft decrypt \"{file}\" \"{destinationFile}\" \"{encryptionKey}\"";
+            string cryptosoftCommand = $"CryptoSoft decrypt \"{file}\" \"{backupConfig.SourceDirectory}\" \"{encryptionKey}\"";
             var processStartInfo = new ProcessStartInfo
             {
                 FileName = "cmd.exe",
