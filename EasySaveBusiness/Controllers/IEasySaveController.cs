@@ -25,11 +25,11 @@ namespace EasySaveBusiness.Controllers
 
         public Task RemoveBackupConfig(int id);
 
-        public Task StartBackupJob(int id);
+        public Task StartBackupJob(int id , BackupJobRequest request);
 
         public Task PauseBackupJob(int id);
 
-        public Task StopBackupJob(int id);
+        public Task StopBackupJob(int id );
 
         protected void OnBackupJobFullStateChanged(object? sender, List<BackupJobFullState> backupJobFullStates);
     }

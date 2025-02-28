@@ -20,7 +20,6 @@ namespace EasySaveBusiness.Tests
         private readonly DifferentialBackupVerifierService _differentialBackupVerifierService;
         private readonly BackupJobService _backupJobService;
         private readonly FileProcessingService _fileProcessingService;
-        private readonly WorkAppMonitorService _workAppMonitorService;
         private readonly IsNetworkUsageExceededService _isNetworkUsageExceeded;
         private readonly SortBackupFileService _sortBackupFileService;
         private readonly IsRunningWorkAppService _isRunningWorkAppService;
@@ -169,6 +168,67 @@ namespace EasySaveBusiness.Tests
             Assert.Equal("Test content 1", File.ReadAllText(destinationFilePath1));
             Assert.Equal("Test content 2", File.ReadAllText(destinationFilePath2));
             Assert.Equal(new string('a', 1024 * 1024 * 10), File.ReadAllText(destinationBigFilePath));
+        }
+        [Fact]
+        public async Task ProcessEncryptedFileAsync_ShouldEncryptFileCorrectly()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted = true
+            };
+            var filePath = Path.Combine(_sourceDirectory, "file1.txt");
+            File.WriteAllText(filePath, "Test content");
+
+            var lockEvent = new ManualResetEventSlim();
+            var lockObject = new object();
+            var encryptionKey = "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b";
+
+
+            // Act
+           await _fileProcessingService.ProcessEncryptedFileAsync(backupConfig, filePath, 0, 0, 1, 1024, lockEvent, lockObject, encryptionKey);
+
+            // Assert
+            var encryptedFilePath = Path.Combine(_targetDirectory, "file1.txt.encrypted");
+            Assert.True(File.Exists(encryptedFilePath));
+            Console.WriteLine(File.ReadAllText(encryptedFilePath));
+            Assert.NotEqual("Test content", File.ReadAllText(encryptedFilePath)); // Ensure the content is encrypted
+        }
+
+        [Fact]
+        public async Task RestoreEncryptedFileAsync_ShouldDecryptFileCorrectly()
+        {
+            // Arrange
+            var backupConfig = new BackupConfig
+            {
+                Id = 1,
+                Name = "Backup1",
+                SourceDirectory = _sourceDirectory,
+                TargetDirectory = _targetDirectory,
+                Type = BackupType.Full,
+                Encrypted = true
+            };
+
+            var filePath = Path.Combine(_targetDirectory, "file1.txt");
+            var encryptedfilePath = Path.Combine(_targetDirectory, "file1.txt.encrypted");    
+            File.WriteAllText(filePath, "Encrypted content"); // Simulate encrypted content
+            var lockEvent = new ManualResetEventSlim();
+            var lockObject = new object();
+            var encryptionKey = "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b";
+            await _fileProcessingService.ProcessEncryptedFileAsync(backupConfig, filePath, 0, 0, 1, 1024, lockEvent, lockObject, encryptionKey);
+
+            // Act
+            await _fileProcessingService.RestoreEncryptedFileAsync(backupConfig, encryptedfilePath, 0, 0, 1, 1024, lockEvent, lockObject, encryptionKey);
+
+            // Assert
+            var decryptedFilePath = Path.Combine(_sourceDirectory, "file1.txt");
+            Assert.True(File.Exists(decryptedFilePath));
+            Assert.Equal("Encrypted content", File.ReadAllText(decryptedFilePath)); // Ensure the content is decrypted correctly
         }
     }
 }
