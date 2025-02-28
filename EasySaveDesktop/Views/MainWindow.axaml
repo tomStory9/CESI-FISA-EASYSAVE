@@ -46,23 +46,27 @@
                     BorderThickness="1"
                     BorderBrush="Gray">
                     <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Header="Checked" Binding="{Binding IsChecked}" Width="50"/>
-                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50" IsReadOnly="True"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                        <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                        <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory, UpdateSourceTrigger=LostFocus}" Width="150"/>
-                        <DataGridTextColumn Header="State" Binding="{Binding State}" Width="100"/>
-                        <DataGridTextColumn Header="Total Files to Copy" Binding="{Binding TotalFilesToCopy}" Width="150"/>
-                        <DataGridTextColumn Header="Total Files Size" Binding="{Binding TotalFilesSize}" Width="150"/>
-                        <DataGridTextColumn Header="Files Left to Do" Binding="{Binding NbFilesLeftToDo}" Width="150"/>
-                        <DataGridTextColumn Header="Progression" Binding="{Binding Progression}" Width="100"/>
+                        <DataGridCheckBoxColumn Header="Checked" Binding="{Binding IsChecked}"/>
+                        <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
+                        <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}"/>
+                        <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory, UpdateSourceTrigger=LostFocus}"/>
+                        <DataGridTextColumn Header="Target" Binding="{Binding TargetDirectory, UpdateSourceTrigger=LostFocus}"/>
+                        <DataGridTextColumn Header="State" Binding="{Binding State}"/>
+                        <DataGridTextColumn Header="Total Files (Count/Size)" Binding="{Binding TotalFilesInfo}"/>
+						<DataGridTemplateColumn Header="Progress" Width="150">
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<ProgressBar Value="{Binding Progression}" ShowProgressText="True" />
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
                         <DataGridTemplateColumn Header="">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <StackPanel Orientation="Horizontal">
                                         <Button Content="{materialIcons:MaterialIconExt Kind=PlayArrow}" Command="{Binding StartCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStartEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=Pause}" Command="{Binding PauseCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsPauseEnabled}"/>
-										<Button Content="{materialIcons:MaterialIconExt Kind=Stop}" Command="{Binding StopCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStopEnabled}"/>
+                                        <Button Content="{materialIcons:MaterialIconExt Kind=Stop}" Command="{Binding StopCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStopEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=TrashCan}" Command="{Binding RemoveCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsRemoveEnabled}"/>
                                     </StackPanel>
                                 </DataTemplate>
@@ -80,7 +84,7 @@
                 Command="{Binding OpenCreateBackupConfigWindowCommand}"
             />
 
-			<controls:FloatingButton
+            <controls:FloatingButton
                 HorizontalAlignment="Left"
                 VerticalAlignment="Bottom"
                 Margin="20"

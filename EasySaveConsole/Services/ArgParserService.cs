@@ -14,25 +14,35 @@ namespace EasySaveConsole.Services
             Args = args ?? throw new ArgumentNullException(nameof(args));
         }
 
-        public UserChoice ParseArguments()
+        public (string Host, int Port, UserChoice UserChoice) ParseArguments()
         {
             var args = Args;
 
-            if (args.Length == 0)
+            if (args.Length < 2)
             {
-                return new UserChoice.ListBackupConfigs();
+                throw new ArgumentException(Resources.Resources.InvalidArguments);
             }
+
+            var serverInfo = args[0].Split(':');
+            if (serverInfo.Length != 2 || !int.TryParse(serverInfo[1], out int port))
+            {
+                throw new ArgumentException(Resources.Resources.InvalidServerInfo);
+            }
+
+            string host = serverInfo[0];
 
             try
             {
-                switch (args[0].ToLower())
+                switch (args[1].ToLower())
                 {
                     case "create":
-                        return ParseCreateArguments(args);
+                        return (host, port, ParseCreateArguments(args.Skip(2).ToArray()));
                     case "remove":
-                        return ParseRemoveArguments(args);
+                        return (host, port, ParseRemoveArguments(args.Skip(2).ToArray()));
+                    case "list":
+                        return (host, port, new UserChoice.ListBackupConfigs());
                     default:
-                        return ParseExecuteArguments(args);
+                        return (host, port, ParseExecuteArguments(args.Skip(2).ToArray()));
                 }
             }
             catch (ArgumentException ex)
@@ -51,13 +61,26 @@ namespace EasySaveConsole.Services
                 throw new ArgumentException(Resources.Resources.InvalidBackupArguments__);
             }
 
-            if (!Enum.TryParse(args[4], true, out BackupType type))
+            if (!Enum.TryParse(args[3], true, out BackupType type))
             {
                 var validTypes = string.Join(", ", Enum.GetNames(typeof(BackupType)));
                 throw new ArgumentException(string.Format(Resources.Resources.InvalidBackupType, args[4], validTypes));
             }
 
-            return new UserChoice.AddBackupConfig(new BackupConfig(args[1], args[2], args[3], type));
+            if (!bool.TryParse(args[4], out bool encrypted))
+            {
+                throw new ArgumentException(Resources.Resources.InvalidEncryptionFlag);
+            }
+
+            return new UserChoice.AddBackupConfig(new BackupConfig
+            {
+                Id = 0, // Id is not used when creating a new backup config
+                Name = args[0],
+                SourceDirectory = args[1],
+                TargetDirectory = args[2],
+                Type = type,
+                Encrypted = encrypted
+            });
         }
 
         private UserChoice ParseRemoveArguments(string[] args)

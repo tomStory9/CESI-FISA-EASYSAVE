@@ -40,7 +40,7 @@ namespace EasySaveClient.Services
 
         private async Task ListenForServerMessages()
         {
-            var buffer = new byte[1024];
+            var buffer = new byte[1024 * 512];
 
             while (true)
             {

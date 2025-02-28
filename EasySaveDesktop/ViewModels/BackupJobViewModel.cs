@@ -45,9 +45,11 @@ namespace EasySaveDesktop.ViewModels
         private BackupJobState state;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalFilesInfo))]
         private long totalFilesToCopy;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TotalFilesInfo))]
         private long totalFilesSize;
 
         [ObservableProperty]
@@ -58,6 +60,7 @@ namespace EasySaveDesktop.ViewModels
 
         [ObservableProperty]
         private bool isChecked;
+        public string TotalFilesInfo => $"{TotalFilesToCopy} ({TotalFilesSize} bytes)";
 
         private bool IsReadOnly => State != BackupJobState.STOPPED;
 

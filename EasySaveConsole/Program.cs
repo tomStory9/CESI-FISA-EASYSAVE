@@ -1,10 +1,9 @@
-﻿using EasySaveBusiness.Services;
-using EasySaveBusiness.ViewModels;
+﻿using EasySaveBusiness.Models;
+using EasySaveBusiness.Services;
+using EasySaveClient.Controllers;
 using EasySaveConsole.Services;
-using EasySaveConsole.Vues;
-using LoggerDLL.Services;
+using EasySaveConsole.Views;
 using System.Globalization;
-using System.Reflection;
 
 class Program
 {
@@ -14,31 +13,44 @@ class Program
         {
             SetCurrentCulture();
 
-            var logPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "logs");
-            var fullStatePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) ?? "", "state.json");
+            string host = string.Empty;
+            int port = 0;
+            UserChoice userChoice = new UserChoice.ListBackupConfigs();
 
-            var loggerService = new LoggerService(logPath, LoggerDLL.Models.LogType.LogTypeEnum.JSON);
-            var backupConfigService = new EasySaveConfigService();
-            var backupFullStateLogger = new BackupFullStateLogger(fullStatePath);
-            var backupService = new BackupJobService(loggerService);
-            var argParserService = new ArgParserService(args);
+            try
+            {
+                var argParser = new ArgParserService(args);
+                (host, port, userChoice) = argParser.ParseArguments();
+            }
+            catch (ArgumentException ex)
+            {
+                ConsoleView.ShowHelp();
+                return;
+            }
 
-            var viewModel = new EasySaveViewModel(
-                backupConfigService,
-                backupService,
-                loggerService,
-                backupFullStateLogger
-            );
-            var view = new ConsoleView(argParserService);
-            viewModel.View = view;
-            view.ViewModel = viewModel;
+            var controller = new RemoteEasySaveController(host, port);
+            var view = new ConsoleView();
 
-            await viewModel.InitAsync();
+            controller.View = view;
+            view.Controller = controller;
+
+            await view.Init();
+
+            //TODO: wait for the FullyInitialized event to trigger
+            var initialisationCompletionSource = new TaskCompletionSource();
+            view.FullyInitialized += (sender, e) => initialisationCompletionSource.SetResult();
+            await initialisationCompletionSource.Task;
+
+            await view.ExecuteParsedArguments(userChoice);
+
+            // Wait indefinitely
+            await Task.Delay(-1);
         }
         catch (Exception ex)
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Erreur critique: {ex.Message}");
+            Console.WriteLine(ex.StackTrace);
             Console.ResetColor();
         }
     }

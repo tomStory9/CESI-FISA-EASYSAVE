@@ -88,6 +88,15 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Encrypted.
+        /// </summary>
+        internal static string Encrypted {
+            get {
+                return ResourceManager.GetString("Encrypted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Error.
         /// </summary>
         internal static string Error {
@@ -160,6 +169,15 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid Arguments.
+        /// </summary>
+        internal static string InvalidArguments {
+            get {
+                return ResourceManager.GetString("InvalidArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Incorrect number of arguments for creating a backup.
         /// </summary>
         internal static string InvalidBackupArguments__ {
@@ -196,11 +214,29 @@ namespace EasySaveConsole.Resources {
         }
         
         /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid Encryption Flag (possible values: true/false).
+        /// </summary>
+        internal static string InvalidEncryptionFlag {
+            get {
+                return ResourceManager.GetString("InvalidEncryptionFlag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Recherche une chaîne localisée semblable à Invalid arguments for removing a backup.
         /// </summary>
         internal static string InvalidRemoveArguments {
             get {
                 return ResourceManager.GetString("InvalidRemoveArguments", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Recherche une chaîne localisée semblable à Invalid Server Info.
+        /// </summary>
+        internal static string InvalidServerInfo {
+            get {
+                return ResourceManager.GetString("InvalidServerInfo", resourceCulture);
             }
         }
         

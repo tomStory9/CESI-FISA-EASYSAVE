@@ -5,6 +5,7 @@ VisualStudioVersion = 17.13.35716.79
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EasySaveConsole", "EasySaveConsole\EasySaveConsole.csproj", "{1F1E2901-29D2-46D8-9098-BAFCDDDCDCDA}"
 	ProjectSection(ProjectDependencies) = postProject
+		{6504914F-8D52-44FE-852A-4D90EB143826} = {6504914F-8D52-44FE-852A-4D90EB143826}
 		{7A80C36F-F980-44F9-AC42-B6496BDE7E4F} = {7A80C36F-F980-44F9-AC42-B6496BDE7E4F}
 	EndProjectSection
 EndProject

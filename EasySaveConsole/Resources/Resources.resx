@@ -195,4 +195,16 @@
   <data name="Error" xml:space="preserve">
     <value>Error</value>
   </data>
+  <data name="InvalidArguments" xml:space="preserve">
+    <value>Invalid Arguments</value>
+  </data>
+  <data name="InvalidServerInfo" xml:space="preserve">
+    <value>Invalid Server Info</value>
+  </data>
+  <data name="InvalidEncryptionFlag" xml:space="preserve">
+    <value>Invalid Encryption Flag (possible values: true/false)</value>
+  </data>
+  <data name="Encrypted" xml:space="preserve">
+    <value>Encrypted</value>
+  </data>
 </root>
