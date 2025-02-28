@@ -1,0 +1,18 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <PropertyGroup>
+    <OutputType>Bundle</OutputType>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasySaveServerInstaller\EasySaveServerInstaller.wixproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasySaveConsoleInstaller\EasySaveConsoleInstaller.wixproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasySaveDesktopInstaller\EasySaveDesktopInstaller.wixproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="5.0.2" />
+  </ItemGroup>
+  <Target Name="CollectSuggestedVisualStudioComponentIds" />
+</Project>

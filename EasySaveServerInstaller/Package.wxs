@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Define the variables in "$(var.*) expressions" -->
+<?define Name = "EasySaveServer" ?>
+<?define Manufacturer = "EasySaveCorp" ?>
+<?define Version = "3.0.0" ?>
+<?define UpgradeCode = "9ED3FF33-8718-444E-B44B-69A2344B7E98" ?>
+
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:fire="http://wixtoolset.org/schemas/v4/wxs/firewall">
+    <Package Name="$(Name)"
+             Manufacturer="$(Manufacturer)"
+             Version="$(Version)"
+             UpgradeCode="$(var.UpgradeCode)"
+             Compressed="true">
+
+        <!-- Allow upgrades and prevent downgrades -->
+        <MajorUpgrade DowngradeErrorMessage="A later version of [ProductName] is already installed. Setup will now exit." />
+
+
+        <!-- The files inside this DirectoryRef are linked to
+             the App.WindowsService directory via INSTALLFOLDER -->
+        <DirectoryRef Id="INSTALLFOLDER">
+
+            <!-- Create a single component which is the App.WindowsService.exe file -->
+            <Component Id="ServiceExecutable" Bitness="always64">
+
+                <!-- Copies the App.WindowsService.exe file using the
+                     project reference preprocessor variables -->
+                <File Id="EasySaveServer.exe"
+                      Source="$(var.EasySaveServer.TargetDir)publish\EasySaveServer.exe"
+                      KeyPath="true" />
+
+                <!-- Remove all files from the INSTALLFOLDER on uninstall -->
+                <RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+
+                <!-- Tell WiX to install the Service -->
+                <ServiceInstall Id="ServiceInstaller"
+                                Type="ownProcess"
+                                Name="EasySaveServer"
+                                DisplayName="$(Name)"
+                                Description="Easy Save Server"
+                                Start="auto"
+                                ErrorControl="normal" />
+
+                <!-- Tell WiX to start the Service -->
+                <ServiceControl Id="StartService"
+                                Start="install"
+                                Stop="both"
+                                Remove="uninstall"
+                                Name="EasySaveServer"
+                                Wait="true" />
+
+				<fire:FirewallException Id="FirewallException"
+                                   Name="EasySaveServer"
+                                   Scope="any"
+                                   Port="4201"
+                                   Protocol="tcp"
+                                   Profile="all" />
+            </Component>
+        </DirectoryRef>
+
+        <!-- Tell WiX to install the files -->
+        <Feature Id="Service" Title="App.WindowsService Setup" Level="1">
+            <ComponentRef Id="ServiceExecutable" />
+        </Feature>
+
+    </Package>
+</Wix>

@@ -1,0 +1,12 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.2">
+  <ItemGroup>
+    <Content Include="favicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Heat" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\EasySaveDesktop\EasySaveDesktop.csproj" />
+  </ItemGroup>
+  <Target Name="CollectSuggestedVisualStudioComponentIds" />
+</Project>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+	<Package Name="EasySave" Manufacturer="Simon Ledoux, Tom Raineri, Lucas Guichemerre"
+			 Version="3.0.0" UpgradeCode="12345678-1234-1234-1234-123456789abc">
+
+		<MajorUpgrade DowngradeErrorMessage="Une version plus récente est déjà installée." />
+
+		<Media Id="1" Cabinet="EasySave.cab" EmbedCab="yes" />
+
+		<Directory Id="TARGETDIR" Name="SourceDir">
+			<Directory Id="ProgramFilesFolder">
+				<Directory Id="INSTALLFOLDER" Name="EasySave" />
+			</Directory>
+		</Directory>
+
+		<!-- Inclusion des fragments -->
+		<Feature Id="EasySaveFeature" Title="EasySave - Applications and Serveur" Level="1">
+			<!--<ComponentRef Id="EasySaveDesktopComponent" />
+			<ComponentRef Id="EasySaveCLIComponent" />-->
+			<ComponentRef Id="EasySaveServerComponent" />
+		</Feature>
+
+	</Package>
+</Wix>

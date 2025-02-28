@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+	  <DirectoryRef Id="INSTALLFOLDER">
+		  <Directory Id="ServerFolder" Name="Server">
+			  <Component Id="EasySaveServerComponent">
+				  <File Id="EasySaveServerExe" Source="..\EasySaveServer\bin\Release\net8.0\EasySaveServer.exe" />
+				  <File Id="EasySaveServerExe"
+                      Source="$(var.EasySaveServer.TargetDir)publish\EasySaveServer.exe"
+                      KeyPath="true" />
+
+				  <RemoveFile Id="ALLFILES" Name="*.*" On="both" />
+
+				  <ServiceInstall Id="EasySaveServerInstall"
+								  Name="EasySaveServer"
+								  DisplayName="EasySave Server"
+								  Description="Serveur de communication EasySave"
+								  Start="auto"
+								  Type="ownProcess"
+								  ErrorControl="normal" />
+
+				  <ServiceControl Id="EasySaveServerControl"
+								  Name="EasySaveServer"
+								  Start="install"
+								  Stop="both"
+								  Remove="uninstall"
+								  Wait="yes" />
+			  </Component>
+		  </Directory>
+	  </DirectoryRef>
+  </Fragment>
+</Wix>
