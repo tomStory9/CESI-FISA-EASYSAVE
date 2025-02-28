@@ -77,7 +77,7 @@ namespace EasySaveBusiness.Services
             FullState = BackupJobFullState.FromBackupConfig(backupConfig);
         }
 
-        public void Start(BackupJobRequest request)
+        public void Start()
         {
             if (FullState.State == BackupJobState.ACTIVE)
             {
@@ -90,18 +90,23 @@ namespace EasySaveBusiness.Services
                 Usermre.Set();
             }
             _cancellationTokenSource = new CancellationTokenSource();
-            switch (request)
-            {
-                case BackupJobRequest.BACKUP:
-                    Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
-                    break;
-                case BackupJobRequest.RESTORE:
-                    Task.Run(() => ExecuteRestoreAsync(_cancellationTokenSource.Token));
-                    break;
-                default:
-                    throw new Exception("Invalid backup job request");
-            }
+            Task.Run(() => ExecuteBackupAsync(_cancellationTokenSource.Token));
+        }
 
+        public void Restore()
+        {
+            if (FullState.State == BackupJobState.ACTIVE)
+            {
+                Console.WriteLine("Backup job already running");
+                // throw new Exception("Backup job already running");
+            }
+            if (FullState.State == BackupJobState.PAUSED)
+            {
+                FullState = FullState with { State = BackupJobState.ACTIVE };
+                Usermre.Set();
+            }
+            _cancellationTokenSource = new CancellationTokenSource();
+            Task.Run(() => ExecuteRestoreAsync(_cancellationTokenSource.Token));
         }
 
         public void Pause()
@@ -160,13 +165,12 @@ namespace EasySaveBusiness.Services
             {
                 if(FullState.State == BackupJobState.PAUSED)
                 {
-                    Usermre.WaitOne();
+                    Usermre.Reset();
                 }
 
                 if (
-                    false
-                    // _isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp)
-                    // || _isNetworkUsageExceedService.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit)
+                   _isRunningWorkAppService.IsRunning(EasySaveConfig.WorkApp)
+                   || _isNetworkUsageExceedService.IsNetworkUsageLimitExceeded(EasySaveConfig.NetworkInterfaceName, EasySaveConfig.NetworkKoLimit)
                 )
                 {
                     SystemPause();

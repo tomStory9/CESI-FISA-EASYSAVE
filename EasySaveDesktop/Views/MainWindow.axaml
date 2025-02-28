@@ -37,7 +37,6 @@
     <dialogHost:DialogHost CloseOnClickAway="True">
         <Grid>
             <StackPanel>
-                <Button IsVisible="{Binding ShowMassActionButtons}" Content="Start All" Command="{Binding StartAllCommand}" />
                 <DataGrid
                     Margin="20"
                     ItemsSource="{Binding BackupJobs, Mode=TwoWay}"
@@ -46,7 +45,7 @@
                     BorderThickness="1"
                     BorderBrush="Gray">
                     <DataGrid.Columns>
-                        <DataGridCheckBoxColumn Header="Checked" Binding="{Binding IsChecked}"/>
+                        <DataGridCheckBoxColumn Header="" Binding="{Binding IsChecked}"/>
                         <DataGridTextColumn Header="ID" Binding="{Binding Id}" IsReadOnly="True"/>
                         <DataGridTextColumn Header="Name" Binding="{Binding Name, UpdateSourceTrigger=LostFocus}"/>
                         <DataGridTextColumn Header="Source" Binding="{Binding SourceDirectory, UpdateSourceTrigger=LostFocus}"/>
@@ -67,13 +66,16 @@
                                         <Button Content="{materialIcons:MaterialIconExt Kind=PlayArrow}" Command="{Binding StartCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStartEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=Pause}" Command="{Binding PauseCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsPauseEnabled}"/>
                                         <Button Content="{materialIcons:MaterialIconExt Kind=Stop}" Command="{Binding StopCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsStopEnabled}"/>
-                                        <Button Content="{materialIcons:MaterialIconExt Kind=TrashCan}" Command="{Binding RemoveCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsRemoveEnabled}"/>
+										<Button Content="{materialIcons:MaterialIconExt Kind=UTurnLeft}" Command="{Binding RestoreCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsRestoreEnabled}"/>
+										<Button Content="{materialIcons:MaterialIconExt Kind=TrashCan}" Command="{Binding RemoveCommand}" CommandParameter="{Binding}" IsEnabled="{Binding IsRemoveEnabled}"/>
                                     </StackPanel>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
+
+				<Button IsVisible="{Binding ShowMassActionButtons}" Content="Start All" Command="{Binding StartAllCommand}" />
             </StackPanel>
 
             <controls:FloatingButton

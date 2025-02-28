@@ -11,15 +11,5 @@ public partial class BackupConfigWizardWindow : Window
     public BackupConfigWizardWindow()
     {
         InitializeComponent();
-
-        if (DataContext is BackupConfigWizardViewModel viewModel)
-        {
-            viewModel.BackupConfigCompleted += OnBackupConfigCompleted;
-        }
-    }
-
-    private void OnBackupConfigCompleted(object? sender, EventArgs e)
-    {
-        Close();
     }
 }

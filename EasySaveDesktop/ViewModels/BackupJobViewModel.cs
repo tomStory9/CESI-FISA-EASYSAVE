@@ -38,6 +38,7 @@ namespace EasySaveDesktop.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(
             nameof(IsStartEnabled),
+            nameof(IsRestoreEnabled),
             nameof(IsPauseEnabled),
             nameof(IsStopEnabled),
             nameof(IsRemoveEnabled)
@@ -65,6 +66,7 @@ namespace EasySaveDesktop.ViewModels
         private bool IsReadOnly => State != BackupJobState.STOPPED;
 
         public bool IsStartEnabled => State == BackupJobState.STOPPED || State == BackupJobState.PAUSED;
+        public bool IsRestoreEnabled => State == BackupJobState.STOPPED;
         public bool IsPauseEnabled => State == BackupJobState.ACTIVE;
         public bool IsStopEnabled => State != BackupJobState.STOPPED;
         public bool IsRemoveEnabled => State == BackupJobState.STOPPED;
@@ -125,6 +127,12 @@ namespace EasySaveDesktop.ViewModels
         private async Task Start()
         {
             await _controller.StartBackupJob(Id);
+        }
+
+        [RelayCommand]
+        private async Task Restore()
+        {
+            await _controller.RestoreBackupJob(Id);
         }
 
         [RelayCommand]
